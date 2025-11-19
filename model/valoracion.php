@@ -1,5 +1,5 @@
 <?php
-class Valoracion {
+class valoracion {
     private $id;
     private $tipo_valoracion;
     private $time_stamp;

@@ -1,5 +1,5 @@
 <?php
-class Pedido {
+class pedido {
     private $id;
     private $estado;
     private $fecha;

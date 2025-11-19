@@ -1,5 +1,5 @@
 <?php
-class LineaPedido {
+class lineaPedido {
     private $id;
     private $precio_unidad;
     private $cantidad;
