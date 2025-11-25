@@ -11,7 +11,7 @@ class ofertaDAO {
         $stmt->execute();
         $results = $stmt->get_result();
 
-        $oferta = $results->fetch_object('Oferta');
+        $oferta = $results->fetch_object('oferta');
         $con->close();
 
         return $oferta;
@@ -24,7 +24,7 @@ class ofertaDAO {
         $results = $stmt->get_result();
 
         $listaOfertas = [];
-        while ($oferta = $results->fetch_object('Oferta')) {
+        while ($oferta = $results->fetch_object('oferta')) {
             $listaOfertas[] = $oferta;
         }
 

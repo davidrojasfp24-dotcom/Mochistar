@@ -11,7 +11,7 @@ class productoDAO {
         $stmt->execute();
         $results = $stmt->get_result();
 
-        $producto = $results->fetch_object('Producto');
+        $producto = $results->fetch_object('producto');
         $con->close();
 
         return $producto;
@@ -24,7 +24,7 @@ class productoDAO {
         $results = $stmt->get_result();
 
         $listaProductos = [];
-        while ($producto = $results->fetch_object('Producto')) {
+        while ($producto = $results->fetch_object('producto')) {
             $listaProductos[] = $producto;
         }
 

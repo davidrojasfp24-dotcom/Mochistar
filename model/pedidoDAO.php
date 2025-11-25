@@ -11,7 +11,7 @@ class pedidoDAO {
         $stmt->execute();
         $results = $stmt->get_result();
 
-        $pedido = $results->fetch_object('Pedido');
+        $pedido = $results->fetch_object('pedido');
         $con->close();
 
         return $pedido;
@@ -24,7 +24,7 @@ class pedidoDAO {
         $results = $stmt->get_result();
 
         $listaPedidos = [];
-        while ($pedido = $results->fetch_object('Pedido')) {
+        while ($pedido = $results->fetch_object('pedido')) {
             $listaPedidos[] = $pedido;
         }
 

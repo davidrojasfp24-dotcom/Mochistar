@@ -11,7 +11,7 @@ class valoracionDAO {
         $stmt->execute();
         $results = $stmt->get_result();
 
-        $valoracion = $results->fetch_object('Valoracion');
+        $valoracion = $results->fetch_object('valoracion');
         $con->close();
 
         return $valoracion;
@@ -24,7 +24,7 @@ class valoracionDAO {
         $results = $stmt->get_result();
 
         $listaValoraciones = [];
-        while ($valoracion = $results->fetch_object('Valoracion')) {
+        while ($valoracion = $results->fetch_object('valoracion')) {
             $listaValoraciones[] = $valoracion;
         }
 

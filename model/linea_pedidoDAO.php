@@ -2,7 +2,6 @@
 include_once 'model/lineaPedido.php';
 include_once 'database/database.php';
 
-
 class lineaPedidoDAO {
 
     public static function getLineaPedidoByID($id){
@@ -12,7 +11,7 @@ class lineaPedidoDAO {
         $stmt->execute();
         $results = $stmt->get_result();
 
-        $lineaPedido = $results->fetch_object('LineaPedido');
+        $lineaPedido = $results->fetch_object('lineaPedido');
         $con->close();
 
         return $lineaPedido;
@@ -25,7 +24,7 @@ class lineaPedidoDAO {
         $results = $stmt->get_result();
 
         $listaLineas = [];
-        while ($linea = $results->fetch_object('LineaPedido')) {
+        while ($linea = $results->fetch_object('lineaPedido')) {
             $listaLineas[] = $linea;
         }
 

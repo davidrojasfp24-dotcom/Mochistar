@@ -11,7 +11,7 @@ class usuarioDAO {
         $stmt->execute();
         $results = $stmt->get_result();
 
-        $usuario = $results->fetch_object('Usuario');
+        $usuario = $results->fetch_object('usuario');
         $con->close();
 
         return $usuario;
@@ -24,7 +24,7 @@ class usuarioDAO {
         $results = $stmt->get_result();
 
         $listaUsuarios = [];
-        while ($usuario = $results->fetch_object('Usuario')) {
+        while ($usuario = $results->fetch_object('usuario')) {
             $listaUsuarios[] = $usuario;
         }
 
