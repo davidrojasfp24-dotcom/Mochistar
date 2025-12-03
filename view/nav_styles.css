@@ -1,0 +1,37 @@
+nav {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    width: 100%;
+    position: fixed;
+    transition: 0.3s ease;
+    background: transparent;
+    padding: 50px;
+}
+
+p {
+    color: #019BF4;
+    font-size: 18px;
+}
+
+.registrarse {
+    background-color: #019BF4;
+    color: #FFFFFF;
+    border-radius: 5px;
+    border-color: #019BF4;
+}
+
+.opciones{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.opciones a{
+    padding-left: 20px;
+    padding-right: 20px;
+    text-decoration: none;
+    color: #019BF4;
+    font-size: 18px;
+}
+
