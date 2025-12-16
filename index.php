@@ -1,5 +1,6 @@
 <?php
 include_once 'controller/homeController.php';
+include_once 'controller/usuarioController.php';
 
 $defaultController = 'home';
 $defaultAction = 'verHome';
@@ -19,5 +20,5 @@ if (isset($_GET['controller'])) {
     }
 } else {
     $controller = new homeController();
-    $controller->verHome();
+    $controller->ver_home();
 }

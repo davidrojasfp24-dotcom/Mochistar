@@ -1,9 +1,9 @@
 <?php
-
+    
     class homeController {
 
-        public function verHome(){
-            $view = 'view/home/index.php';
+        public function ver_home(){
+            $view = 'view/home.php';
             include_once 'view/main.php';
         }
     }
