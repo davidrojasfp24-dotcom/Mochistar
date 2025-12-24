@@ -1,0 +1,84 @@
+/* --- Variables de Color (Mochistar Dark) --- */
+:root {
+    --bg-dark-principal: #121212;
+    --bg-sidebar: #181818;
+    --accent-blue: #0d6efd;
+    --text-muted: #a0a0a0;
+    --border-color: #2a2a2a;
+    --sidebar-width: 280px;
+}
+
+/* --- Layout Base --- */
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+#sidebar-container {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+}
+
+#page-content-wrapper {
+    flex-grow: 1;
+    background-color: var(--bg-dark-principal);
+    overflow-x: hidden;
+}
+
+/* --- Estilo del Menú (IDÉNTICO A TU IMAGEN) --- */
+.nav-link-custom {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 14px 20px;
+    margin: 8px 15px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-link-custom i {
+    font-size: 1.3rem;
+    margin-right: 15px;
+}
+
+.nav-link-custom:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+/* Clase activa: El botón azul de tu foto */
+.nav-link-custom.active {
+    background-color: var(--accent-blue);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* --- Estilo de la Tabla --- */
+.table-responsive {
+    border-radius: 15px;
+    background-color: #1e1e1e;
+    padding: 10px;
+}
+
+.table-dark {
+    background-color: transparent;
+    border: none;
+}
+
+.table-dark thead th {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px;
+}
+
+.table-dark td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}

@@ -2,7 +2,7 @@
 include_once 'model/producto.php';
 include_once 'database/database.php';
 
-class productoDAO {
+class productoController {
 
     public static function getProductoByID($id){
         $con = DataBase::connect();
@@ -13,7 +13,6 @@ class productoDAO {
 
         $producto = $results->fetch_object('producto');
         $con->close();
-
         return $producto;
     }
 
@@ -31,6 +30,5 @@ class productoDAO {
         $con->close();
         return $listaProductos;
     }
-
 }
 ?>

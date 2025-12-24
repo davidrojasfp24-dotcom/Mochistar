@@ -1,9 +1,12 @@
 <?php
 include_once 'controller/homeController.php';
 include_once 'controller/usuarioController.php';
+include_once 'controller/apiController.php';
 
 $defaultController = 'home';
-$defaultAction = 'verHome';
+$defaultAction = 'ver_home';
+
+session_start();
 
 if (isset($_GET['controller'])) {
     $nombre_controller = $_GET['controller'].'Controller';

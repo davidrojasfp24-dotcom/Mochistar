@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-12-2025 a las 17:27:46
+-- Tiempo de generación: 17-12-2025 a las 10:44:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -34,6 +34,21 @@ CREATE TABLE `linea_pedido` (
   `porcentaje_descuento` decimal(5,2) DEFAULT NULL,
   `id_pedido` int(11) NOT NULL,
   `id_producto` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `log_admin`
+--
+
+CREATE TABLE `log_admin` (
+  `id_log` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `dia/hora` datetime NOT NULL DEFAULT current_timestamp(),
+  `accion` varchar(255) NOT NULL,
+  `detalle` text DEFAULT NULL,
+  `tabla_afectada` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -95,6 +110,17 @@ CREATE TABLE `usuario` (
   `contrasena` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`id_usuario`, `nombre`, `apellido`, `email`, `telefono`, `rol`, `contrasena`) VALUES
+(1, 'Usuario Prueba', 'Apellido', 'prueba@gmail.com', '600000000', 'user', '$2y$10$uL7MSOWEfjtRxA3E9NRUCOK.PR1sJGHOyTu8cupsPh1rjyTdB158.'),
+(2, 'Juan Alberto', 'Garcia', 'juanalbrtogarcia@gmail.com', '644894056', 'cliente', '123'),
+(3, 'Pepe', 'Gomez', 'pepegomez@gmail.com', '644894057', 'cliente', '1234567'),
+(4, 'Maricarmen', 'Mendez', 'maricarmenmendez@gmail.com', '644894058', 'cliente', '123456'),
+(5, 'David', 'Rojas', 'davidrojasesteban@gmail.com', '661604679', 'admin', '$2y$10$Q80mFhk0TjUnRuwJ7LJIdO7N2kIhymtNcokC4liG9LyItiaxbXG8i');
+
 -- --------------------------------------------------------
 
 --
@@ -122,6 +148,13 @@ ALTER TABLE `linea_pedido`
   ADD PRIMARY KEY (`id_linea`),
   ADD KEY `fk_linea_pedido_pedido` (`id_pedido`),
   ADD KEY `fk_linea_pedido_producto` (`id_producto`);
+
+--
+-- Indices de la tabla `log_admin`
+--
+ALTER TABLE `log_admin`
+  ADD PRIMARY KEY (`id_log`),
+  ADD KEY `fk_log_admin_usuario` (`id_usuario`);
 
 --
 -- Indices de la tabla `oferta`
@@ -169,6 +202,12 @@ ALTER TABLE `linea_pedido`
   MODIFY `id_linea` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `log_admin`
+--
+ALTER TABLE `log_admin`
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `oferta`
 --
 ALTER TABLE `oferta`
@@ -190,7 +229,7 @@ ALTER TABLE `producto`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `valoracion`
@@ -208,6 +247,12 @@ ALTER TABLE `valoracion`
 ALTER TABLE `linea_pedido`
   ADD CONSTRAINT `fk_linea_pedido_pedido` FOREIGN KEY (`id_pedido`) REFERENCES `pedido` (`id_pedido`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_linea_pedido_producto` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `log_admin`
+--
+ALTER TABLE `log_admin`
+  ADD CONSTRAINT `fk_log_admin_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pedido`

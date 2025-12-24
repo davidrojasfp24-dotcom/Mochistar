@@ -1,37 +1,103 @@
-nav {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
+/* -------------------------------------------
+   ESTILOS GENERALES Y LAYOUT PRINCIPAL (Flexbox)
+   ------------------------------------------- */
+
+header {
+    background-color: #000; /* Fondo negro */
     width: 100%;
-    position: fixed;
-    transition: 0.3s ease;
-    background: transparent;
-    padding: 50px;
+    position: fixed; /* Opcional: Para mantener el nav fijo arriba */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Asegura que esté por encima de otros contenidos */
 }
 
-p {
-    color: #019BF4;
-    font-size: 18px;
-}
-
-.registrarse {
-    background-color: #019BF4;
-    color: #FFFFFF;
-    border-radius: 5px;
-    border-color: #019BF4;
-}
-
-.opciones{
+.nav-principal {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between; /* Distribuye el espacio entre logo, menú y acciones */
+    align-items: center; /* Centra los ítems verticalmente */
+    padding: 10px 40px; /* Espaciado interno horizontal y vertical */
+    max-width: 1400px; /* Opcional: Para centrar el contenido en pantallas grandes */
+    margin: 0 auto;
+    height: 60px; /* Altura estándar de la barra de navegación */
 }
 
-.opciones a{
-    padding-left: 20px;
-    padding-right: 20px;
+/* -------------------------------------------
+   BLOQUE 1: LOGO
+   ------------------------------------------- */
+.nav-logo img {
+    height: 30px; /* Ajusta el tamaño del logo */
+    vertical-align: middle;
+}
+
+/* -------------------------------------------
+   BLOQUE 2: MENÚ DE NAVEGACIÓN CENTRAL
+   ------------------------------------------- */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre cada elemento del menú */
+}
+
+.nav-menu a {
+    color: #fff; /* Texto blanco */
     text-decoration: none;
-    color: #019BF4;
-    font-size: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.9;
+    padding: 5px 0;
+    transition: opacity 0.2s;
 }
 
+.nav-menu a:hover {
+    opacity: 1;
+    color: #fff;
+}
+
+/* Estilo para los puntos separadores (el color azul de Movistar+) */
+.separador {
+    color: #00B4FF; /* Color cyan/azul claro */
+    font-size: 18px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+/* -------------------------------------------
+   BLOQUE 3: ACCIONES DE USUARIO (Iniciar Sesión y Botón Suscribir)
+   ------------------------------------------- */
+.nav-acciones {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Espacio entre el enlace de login y el botón */
+}
+
+/* Enlace "Iniciar sesión" */
+.btn-iniciar-sesion {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.btn-iniciar-sesion:hover {
+    opacity: 0.8;
+}
+
+/* Botón "SUSCRIBIRME AHORA" (el botón azul principal) */
+.btn-suscribir {
+    background-color: #0066FF; /* Azul brillante */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px; 
+    text-transform: uppercase; /* Todo en mayúsculas */
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s;
+}
+
+.btn-suscribir:hover {
+    background-color: #0052CC; /* Un azul ligeramente más oscuro al pasar el ratón */
+}
