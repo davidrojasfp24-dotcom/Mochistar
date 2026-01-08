@@ -6,7 +6,7 @@
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="mochi-card">
                     <div class="mochi-img-container">
-                        <img src="assets/img/<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>">
+                        <img src="view/home/img/<?= $producto['imagen'] ?>" alt="<?= $producto['nombre'] ?>">
                     </div>
 
                     <div class="mochi-body">

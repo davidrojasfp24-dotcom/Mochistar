@@ -104,3 +104,28 @@
     color: #ff0000;
     text-decoration: underline;
 }
+
+.selector-cantidad {
+    background-color: #00a8ff;
+    color: white;
+    border-radius: 40px; /* Más redondeado como tu imagen */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px;
+    height: 50px;
+    width: 100%;
+}
+
+.btn-flecha {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 15px;
+}
+
+.btn-flecha:hover {
+    transform: scale(1.2);
+}

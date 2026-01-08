@@ -1,98 +1,97 @@
-// Variable para el modal de Bootstrap
-let modalProducto;
-
 /**
- * 1. Gestión de Navegación Lateral
+ * GESTIÓN DE PRODUCTOS (MOCHIS)
  */
-function cambiarSeccion(seccion, event) {
-    if (event) event.preventDefault();
-
-    document.querySelectorAll('.nav-link-custom').forEach(link => link.classList.remove('active'));
-    if (event) event.currentTarget.classList.add('active');
-
-    switch (seccion) {
-        case 'producto':
-            cargarSeccionProductos();
-            break;
-        default:
-            document.getElementById('contenedor-principal').innerHTML = `
-                <h2 class="text-white">Sección ${seccion}</h2>
-                <p class="text-muted">Contenido en desarrollo...</p>`;
-    }
-}
+let instanceModalProducto = null;
 
 /**
- * 2. Cargar Tabla de Productos (GET)
+ * 1. Cargar la tabla de productos
+ * Se ejecuta cuando pulsas "Productos" en el sidebar
  */
 async function cargarSeccionProductos() {
     const contenedor = document.getElementById('contenedor-principal');
-    contenedor.innerHTML = '<div class="text-white">Cargando productos...</div>';
+    
+    // Dibujamos la estructura de la tabla
+    contenedor.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-white">Gestión de Productos</h2>
+            <button class="btn btn-primary" onclick="abrirModalProducto()">
+                <i class="bi bi-plus-lg me-2"></i> Nuevo Producto
+            </button>
+        </div>
+        <div class="table-responsive bg-dark p-3 rounded shadow">
+            <table class="table table-dark table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>NOMBRE</th>
+                        <th>PRECIO</th>
+                        <th>STOCK</th>
+                        <th class="text-center">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-productos-body">
+                    <tr><td colspan="5" class="text-center p-4">Cargando productos...</td></tr>
+                </tbody>
+            </table>
+        </div>`;
 
     try {
-        // CORREGIDO: Usamos el controlador 'api'
         const response = await fetch('index.php?controller=api&action=productos');
         const res = await response.json();
 
-        if (res.estado === 'Exito') {
-            contenedor.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="text-white">Gestión de Productos</h2>
-                    <button class="btn btn-primary" onclick="abrirModalProducto()">
-                        <i class="bi bi-plus-lg"></i> Nuevo Producto
-                    </button>
-                </div>
-                <div class="table-responsive bg-dark p-3 rounded shadow">
-                    <table class="table table-dark table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${res.data.map(p => `
-                                <tr>
-                                    <td>#${p.id_producto}</td>
-                                    <td>${p.nombre}</td>
-                                    <td>${p.precio_unidad}€</td>
-                                    <td>${p.cantidad} uds</td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-outline-info me-2" onclick="editarProducto(${p.id_producto})">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${p.id_producto})">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>`;
+        const tbody = document.getElementById('tabla-productos-body');
+
+        if (res.estado === 'Exito' && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(p => `
+                <tr>
+                    <td class="text-muted">#${p.id_producto}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <span class="fw-bold">${p.nombre}</span>
+                        </div>
+                    </td>
+                    <td><span class="text-info">${p.precio_unidad}€</span></td>
+                    <td>
+                        <span class="badge ${p.cantidad < 10 ? 'bg-warning text-dark' : 'bg-secondary'}">
+                            ${p.cantidad} uds
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-info me-2" onclick="editarProducto(${p.id_producto})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${p.id_producto})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted">No hay productos en la base de datos.</td></tr>';
         }
     } catch (error) {
-        console.error("Error en el JS:", error);
-        contenedor.innerHTML = `<div class="alert alert-danger">Error al cargar datos. Verifica la consola.</div>`;
+        console.error("Error al cargar productos:", error);
+        document.getElementById('contenedor-principal').innerHTML = `<div class="alert alert-danger">Error de conexión con el servidor.</div>`;
     }
 }
 
 /**
- * 3. Lógica del Modal
+ * 2. Lógica del Modal (Abrir para crear o editar)
  */
 function abrirModalProducto(datos = null) {
-    if (!modalProducto) {
-        modalProducto = new bootstrap.Modal(document.getElementById('modalProducto'));
+    if (!instanceModalProducto) {
+        instanceModalProducto = new bootstrap.Modal(document.getElementById('modalProducto'));
     }
 
     const form = document.getElementById('formProducto');
     form.reset();
+    
+    // Limpiamos el ID oculto
     document.getElementById('id_producto').value = "";
 
     if (datos) {
-        document.getElementById('modalTitulo').innerText = "Editar Producto";
+        // Si vienen datos, es MODO EDICIÓN
+        document.getElementById('modalTitulo').innerText = "Editar Producto #" + datos.id_producto;
         document.getElementById('id_producto').value = datos.id_producto;
         document.getElementById('nombre').value = datos.nombre;
         document.getElementById('descripcion').value = datos.descripcion;
@@ -100,17 +99,37 @@ function abrirModalProducto(datos = null) {
         document.getElementById('cantidad').value = datos.cantidad;
         document.getElementById('imagen').value = datos.imagen;
     } else {
+        // Si no vienen datos, es MODO NUEVO
         document.getElementById('modalTitulo').innerText = "Nuevo Producto";
     }
 
-    modalProducto.show();
+    instanceModalProducto.show();
 }
 
 /**
- * 4. Guardar datos (POST para crear, PUT para editar)
+ * 3. Obtener datos de un producto específico para editar
+ */
+async function editarProducto(id) {
+    try {
+        const response = await fetch(`index.php?controller=api&action=productos&id=${id}`);
+        const res = await response.json();
+        if (res.estado === 'Exito') {
+            abrirModalProducto(res.data);
+        } else {
+            alert("No se pudo obtener la información del producto.");
+        }
+    } catch (error) {
+        console.error("Error al editar:", error);
+    }
+}
+
+/**
+ * 4. Guardar datos (POST para crear, PUT para actualizar)
  */
 async function guardarProducto() {
     const id = document.getElementById('id_producto').value;
+    
+    // Recolectamos los datos del formulario
     const datos = {
         nombre: document.getElementById('nombre').value,
         descripcion: document.getElementById('descripcion').value,
@@ -119,10 +138,15 @@ async function guardarProducto() {
         imagen: document.getElementById('imagen').value || 'default.png'
     };
 
+    // Validaciones básicas
+    if (!datos.nombre || isNaN(datos.precio_unidad)) {
+        return alert("Por favor, rellena los campos obligatorios.");
+    }
+
+    // Si hay ID, lo añadimos al objeto para que el backend sepa cuál editar
     if (id) datos.id_producto = id;
 
     try {
-        // CORREGIDO: URL unificada controller=api
         const response = await fetch('index.php?controller=api&action=productos', {
             method: id ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -130,53 +154,39 @@ async function guardarProducto() {
         });
 
         const res = await response.json();
+        
         if (res.estado === 'Exito') {
-            modalProducto.hide();
-            cargarSeccionProductos();
+            instanceModalProducto.hide();
+            cargarSeccionProductos(); // Recargamos la tabla para ver los cambios
         } else {
-            alert("Error: " + res.mensaje);
+            alert("Error del servidor: " + res.mensaje);
         }
     } catch (error) {
-        alert("Error de conexión con la API");
+        alert("Error crítico de comunicación con la API");
     }
 }
 
 /**
- * 5. Obtener datos para editar (GET individual)
- */
-async function editarProducto(id) {
-    try {
-        // CORREGIDO: URL unificada controller=api
-        const response = await fetch(`index.php?controller=api&action=productos&id=${id}`);
-        const res = await response.json();
-        if (res.estado === 'Exito') {
-            abrirModalProducto(res.data);
-        }
-    } catch (error) {
-        console.error("Error al obtener datos del producto");
-    }
-}
-
-/**
- * 6. Eliminar (DELETE)
+ * 5. Eliminar un producto (DELETE)
  */
 async function confirmarEliminar(id) {
-    if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
+    if (!confirm("¿Estás seguro de que deseas eliminar este mochi? Esta acción no se puede deshacer.")) return;
 
     try {
-        // CORREGIDO: URL unificada controller=api
         const response = await fetch('index.php?controller=api&action=productos', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: id })
         });
+        
         const res = await response.json();
+        
         if (res.estado === 'Exito') {
             cargarSeccionProductos();
         } else {
-            alert(res.mensaje);
+            alert("No se pudo eliminar: " + res.mensaje);
         }
     } catch (error) {
-        alert("Error al eliminar");
+        alert("Error al intentar conectar con el servidor para eliminar.");
     }
 }

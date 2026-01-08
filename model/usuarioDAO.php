@@ -5,12 +5,12 @@ require_once 'model/usuario.php';
 class usuarioDAO {
 
     /**
-     * Obtiene un usuario específico por su ID
-     * Usa fetch_assoc para total compatibilidad con JSON
+     * Obtiene un usuario específico por su ID_USUARIO
      */
     public static function getUsuarioByID($id){
         $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM usuario WHERE id = ?");
+        // Corregido: id -> id_usuario
+        $stmt = $con->prepare("SELECT * FROM usuario WHERE id_usuario = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $results = $stmt->get_result();
@@ -22,11 +22,12 @@ class usuarioDAO {
     }
 
     /**
-     * Obtiene todos los usuarios
+     * Obtiene todos los usuarios ordenados por ID_USUARIO
      */
     public static function getUsuarios(){
         $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM usuario ORDER BY id DESC");
+        // Corregido: id -> id_usuario
+        $stmt = $con->prepare("SELECT * FROM usuario ORDER BY id_usuario DESC");
         $stmt->execute();
         $results = $stmt->get_result();
 
@@ -40,12 +41,12 @@ class usuarioDAO {
     }
 
     /**
-     * Inserta un nuevo usuario y registra la acción
+     * Inserta un nuevo usuario y registra la acción en log_admin
      */
     public function crear($nombre, $apellido, $email, $telefono, $rol, $password, $id_admin) {
         $con = DataBase::connect();
         
-        // Hasheamos la contraseña antes de guardar
+        // Hasheamos la contraseña para seguridad
         $hash = password_hash($password, PASSWORD_DEFAULT);
         
         $stmt = $con->prepare("INSERT INTO usuario (nombre, apellido, email, telefono, rol, contrasena) VALUES (?, ?, ?, ?, ?, ?)");
@@ -65,7 +66,8 @@ class usuarioDAO {
      */
     public function modificar($id, $nombre, $apellido, $email, $telefono, $rol, $id_admin) {
         $con = DataBase::connect();
-        $stmt = $con->prepare("UPDATE usuario SET nombre=?, apellido=?, email=?, telefono=?, rol=? WHERE id=?");
+        // Corregido: id -> id_usuario
+        $stmt = $con->prepare("UPDATE usuario SET nombre=?, apellido=?, email=?, telefono=?, rol=? WHERE id_usuario=?");
         
         $stmt->bind_param("sssssi", $nombre, $apellido, $email, $telefono, $rol, $id);
         
@@ -78,11 +80,12 @@ class usuarioDAO {
     }
 
     /**
-     * Elimina un usuario
+     * Elimina un usuario por ID_USUARIO
      */
     public function eliminar($id, $id_admin) {
         $con = DataBase::connect();
-        $stmt = $con->prepare("DELETE FROM usuario WHERE id = ?");
+        // Corregido: id -> id_usuario
+        $stmt = $con->prepare("DELETE FROM usuario WHERE id_usuario = ?");
         $stmt->bind_param("i", $id);
         
         $success = $stmt->execute();
@@ -94,7 +97,7 @@ class usuarioDAO {
     }
 
     /**
-     * Función para el Login
+     * Función para el Login: usa fetch_object para cargar métodos del modelo usuario
      */
     public static function login($email, $password){
         $con = DataBase::connect();
@@ -106,7 +109,6 @@ class usuarioDAO {
         $usuario_logeado = null;
 
         if ($results->num_rows == 1) {
-            // Aquí sí usamos fetch_object porque necesitamos usar los métodos del modelo
             $usuario = $results->fetch_object('usuario');
             if (password_verify($password, $usuario->getContrasena())) {
                 $usuario_logeado = $usuario; 
@@ -120,27 +122,25 @@ class usuarioDAO {
     /**
      * Auditoría de acciones de administrador
      */
-    private function registrarLog($user, $acc, $det, $tabla) {
+    private function registrarLog($id_user, $accion, $detalle, $tabla) {
         $con = DataBase::connect();
         $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $user, $acc, $det, $tabla);
+        $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
         $stmt->execute();
         $con->close();
     }
 
-    // Dentro de la clase usuarioDAO en model/usuarioDAO.php
-
+    /**
+     * Registro rápido de usuario (clientes)
+     */
     public static function registrarUsuario($usuario) {
         $con = DataBase::connect();
         
-        // 1. Obtenemos la contraseña plana y la hasheamos para seguridad
         $password_plana = $usuario->getContrasena(); 
         $hash_contrasena = password_hash($password_plana, PASSWORD_DEFAULT);
         
-        // 2. Preparamos la consulta SQL
         $stmt = $con->prepare("INSERT INTO usuario (nombre, apellido, email, telefono, rol, contrasena) VALUES (?, ?, ?, ?, ?, ?)");
         
-        // 3. Bind de parámetros (s = string)
         $stmt->bind_param(
             'ssssss', 
             $usuario->getNombre(), 
@@ -154,6 +154,6 @@ class usuarioDAO {
         $result = $stmt->execute();
         $con->close();
         
-        return $result; // Devuelve true si se insertó correctamente
+        return $result;
     }
 }

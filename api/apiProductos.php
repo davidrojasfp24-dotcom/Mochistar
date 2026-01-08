@@ -1,42 +1,33 @@
 <?php
-/**
- * IMPORTANTE: No debe haber NADA (ni un espacio) antes del <?php arriba.
- */
-
-// 1. Limpieza absoluta del buffer. 
-// Si el index.php abrió un buffer, esto lo descarta para empezar de cero.
+//Borra cualquier cosa que se haya intentado escribir antes
 while (ob_get_level() > 0) {
     ob_end_clean();
 }
 ob_start();
 
-/**
- * 2. CONFIGURACIÓN Y SESIÓN
- */
+//Inicia la sesión para saber quién está conectado
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 error_reporting(E_ALL);
-ini_set('display_errors', 0); // No ensuciar la salida con texto de errores
+ini_set('display_errors', 0);//No ensuciar la salida con texto de errores
 
-/**
- * 3. IMPORTACIÓN DE ARCHIVOS
- */
+//Importa los archivos necesarios
 require_once 'database/database.php';
 require_once 'model/producto.php';
 require_once 'model/productoDAO.php';
 
-/**
- * Función para responder al Frontend
- */
+//Funcion para enviar respuestas JSON
 function respuestaJSON($estado, $data = null, $mensaje = '', $codigo = 200) {
-    // Limpiamos cualquier eco accidental o warning que haya ocurrido durante la ejecución
+    //Limpiamos para que no haya nada
     if (ob_get_length()) ob_clean(); 
     
+    //Avisa que viene JSON
     header("Content-Type: application/json; charset=UTF-8");
     http_response_code($codigo);
     
+    //Convierte el array de PHP en un texto que JavaScript puede leer
     echo json_encode([
         'estado' => $estado,
         'data' => $data,
@@ -49,9 +40,7 @@ function respuestaJSON($estado, $data = null, $mensaje = '', $codigo = 200) {
 }
 
 try {
-    /**
-     * 4. CONTROL DE ACCESO
-     */
+
     if (!isset($_SESSION['usuario'])) {
         respuestaJSON('Fallido', null, 'Sesión no válida o expirada', 401);
     }
@@ -60,9 +49,6 @@ try {
     $dao = new productoDAO();
     $id_admin = $_SESSION['usuario']->getId();
 
-    /**
-     * 5. LÓGICA DE LA API
-     */
     switch ($metodo) {
         case 'GET':
             if (isset($_GET['id'])) {

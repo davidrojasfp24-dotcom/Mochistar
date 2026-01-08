@@ -1,73 +1,252 @@
-/* Contenedor principal de la tarjeta */
-.mochi-card {
-    background-color: #121212; /* Gris oscuro casi negro */
-    border-radius: 25px;       /* Bordes muy redondeados */
-    padding: 20px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #222;    /* Borde sutil */
+/* Limpieza inicial */
+body {
+    background-color: #000;
+    margin: 0;
+    color: white;
 }
 
-/* El recuadro blanco de la imagen */
-.mochi-img-container {
-    background-color: #fff;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 15px;
-    aspect-ratio: 1 / 1;      /* Hace que el contenedor siempre sea cuadrado */
+/* --- CARRUSEL PANTALLA COMPLETA --- */
+#carouselExampleAutoplaying, .carousel-item {
+    height: 100vh !important;
+}
+
+.hero-overlay {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
     display: flex;
     align-items: center;
+    position: relative;
+}
+
+/* Sombra para que se vea el texto blanco */
+.hero-overlay::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+/* --- SECCIÓN LALIGA (BAJO EL CARRUSEL) --- */
+.promo-section {
+    background-color: #000;
+    padding: 80px 0;
+    display: flex;
     justify-content: center;
 }
 
-.mochi-img-container img {
+/* El contenedor principal */
+.promo-card {
+    width: 80%;
+    display: flex;
+    /* border-radius: 30px; <-- ELIMINADO: Ya no redondeamos todo el contenedor */
+    /* overflow: hidden;  <-- ELIMINADO: No hace falta si aplicamos bordes a los hijos */
+    min-height: 450px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    background-color: transparent; /* Fondo transparente para que no se vea pico negro */
+}
+
+/* Lado Izquierdo (Imagen) - ESQUINAS CUADRADAS */
+.promo-img-side {
+    flex: 1.5;
+    background-color: #000;
+    /* Aseguramos que las esquinas izquierdas sean cuadradas */
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.promo-img-side img {
     width: 100%;
     height: 100%;
-    object-fit: cover;        /* Ajusta la imagen sin deformarla */
+    object-fit: cover;
+    /* La imagen también debe ser cuadrada a la izquierda */
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
-/* Títulos y textos */
-.mochi-title {
-    color: #ffffff;
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 5px;
-    min-height: 3rem;         /* Mantiene los títulos alineados aunque sean largos */
+/* Lado Derecho (Recuadro Gris) - ESQUINAS REDONDEADAS A LA DERECHA */
+.promo-grey-side {
+    flex: 1;
+    background-color: #1F1F1F;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* APLICAMOS EL REDONDEADO SOLO A LA DERECHA */
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
 }
 
-.mochi-link {
-    color: #0095ff;           /* Azul de los enlaces */
+/* Título (Blanco) */
+.promo-title {
+    color: #FFFFFF;
+    font-weight: 900;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    line-height: 1;
+}
+
+/* Botón Azul */
+.btn-blue {
+    background-color: #019BF4 !important;
+    color: white !important;
+    border-radius: 50px;
+    padding: 15px 40px;
+    font-weight: 700;
     text-decoration: none;
-    font-size: 0.9rem;
-}
-
-/* Precio y Botón */
-.mochi-footer {
-    margin-top: auto;         /* Empuja el precio y botón al final */
-    padding-top: 20px;
-}
-
-.mochi-price {
-    display: block;
-    color: #ffffff;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.btn-comprar {
-    background-color: #0095ff; /* Azul Mochistar */
-    color: white;
+    display: inline-block;
+    width: fit-content;
+    text-transform: uppercase;
     border: none;
-    width: 100%;
-    padding: 12px;
-    border-radius: 15px;      /* Botón redondeado */
-    font-weight: bold;
-    letter-spacing: 1px;
-    transition: background 0.3s;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
-.btn-comprar:hover {
-    background-color: #007acc;
+.btn-blue:hover {
+    transform: scale(1.05);
+    background-color: #0081cc !important;
+}
+
+/* --- SECCIÓN PRODUCTOS --- */
+.product-card {
+    position: relative;
+    padding: 40px;
+    border-radius: 25px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Tarjeta Blanca */
+.card-white {
+    background-color: #FFFFFF;
+    color: #000;
+}
+
+/* Tarjeta Oscura con Borde Naranja */
+.card-dark {
+    background-color: #1F1F1F;
+    color: #FFFFFF;
+    border: 2px solid #FFA500; /* Borde naranja */
+}
+
+.product-card h3 {
+    font-weight: 800;
+    font-size: 2rem;
+    margin-top: 10px;
+}
+
+.card-footer-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Iconos de esquina (Badges) */
+.badge-icon {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    width: 40px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 85%, 0% 100%);
+    font-size: 1.2rem;
+}
+
+.badge-orange { background-color: #FFA500; color: white; }
+.badge-white { background-color: #FFFFFF; color: #FFA500; }
+
+/* --- SECCIÓN GALERÍA BENTO --- */
+.menu-grid-section {
+    background-color: #000;
+    padding: 60px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.bento-grid {
+    width: 80%; /* Ancho que pediste */
+    display: grid;
+    /* Creamos 4 columnas iguales */
+    grid-template-columns: repeat(4, 1fr);
+    /* Definimos filas automáticas con un espacio (gap) entre ellas */
+    grid-auto-rows: 220px;
+    gap: 20px;
+}
+
+/* Estilo general de los items */
+.grid-item {
+    border-radius: 25px; /* Bordes redondeados */
+    overflow: hidden;
+    position: relative;
+}
+
+.grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Para que las fotos no se deformen */
+    display: block;
+}
+
+/* --- LOGICA DE TAMAÑOS (Spans) --- */
+
+/* La tarjeta de MENU y las fotos ALTAS ocupan 2 filas */
+.card-menu, .item-tall {
+    grid-row: span 2;
+}
+
+/* Tarjeta de MENU específica */
+.card-menu {
+    background-color: #1F1F1F; /* Tu gris exacto */
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-label {
+    color: #019BF4; /* Azul Movistar */
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+}
+
+.btn-blue-menu {
+    background-color: #019BF4;
+    color: white;
+    text-decoration: none;
+    padding: 12px 0;
+    width: 100%;
+    text-align: center;
+    border-radius: 15px;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn-blue-menu:hover {
+    background-color: #008be0;
+    transform: translateY(-3px);
+}
+
+/* Ajuste para móviles: que pase a 1 o 2 columnas */
+@media (max-width: 992px) {
+    .bento-grid {
+        width: 95%;
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

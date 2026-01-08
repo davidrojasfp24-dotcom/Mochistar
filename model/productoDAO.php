@@ -6,17 +6,15 @@ class productoDAO {
 
     /**
      * Obtiene un producto específico por su ID
-     * CORREGIDO: Usa fetch_assoc para que el JSON no salga vacío
+     * Usa fetch_assoc para que los nombres de las llaves coincidan con la DB
      */
-    public static function getProductoByID($id){
+    public static function getProductoByID($id) {
         $con = DataBase::connect();
         $stmt = $con->prepare("SELECT * FROM producto WHERE id_producto = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $results = $stmt->get_result();
 
-        // Al usar fetch_assoc, los nombres de las llaves serán 
-        // exactamente iguales a los de tu base de datos.
         $producto = $results->fetch_assoc(); 
         $con->close();
 
@@ -25,16 +23,14 @@ class productoDAO {
 
     /**
      * Obtiene todos los productos de la base de datos
-     * CORREGIDO: Mapeo a array asociativo para compatibilidad con la API
      */
-    public static function getProductos(){
+    public static function getProductos() {
         $con = DataBase::connect();
         $stmt = $con->prepare("SELECT * FROM producto ORDER BY id_producto DESC");
         $stmt->execute();
         $results = $stmt->get_result();
 
         $listaProductos = [];
-        // fetch_assoc captura 'id_producto', 'nombre', 'precio_unidad', etc.
         while ($producto = $results->fetch_assoc()) {
             $listaProductos[] = $producto;
         }
@@ -44,17 +40,18 @@ class productoDAO {
     }
 
     /**
-     * Inserta un nuevo producto
+     * Inserta un nuevo producto y registra el LOG
      */
     public function crear($nombre, $descripcion, $precio, $cantidad, $imagen, $id_usuario) {
         $con = DataBase::connect();
         $stmt = $con->prepare("INSERT INTO producto (nombre, descripcion, precio_unidad, cantidad, imagen) VALUES (?, ?, ?, ?, ?)");
-        
         $stmt->bind_param("ssdis", $nombre, $descripcion, $precio, $cantidad, $imagen);
         
         $crear = $stmt->execute();
+
+        // Si se crea con éxito, registramos la acción usando la conexión abierta ($con)
         if ($crear) {
-            $this->registrarLog($id_usuario, 'INSERT', "Creada mochila: $nombre", 'producto');
+            $this->registrarLog($con, $id_usuario, 'INSERT', "Creada mochila: $nombre", 'producto');
         }
 
         $con->close();
@@ -62,24 +59,25 @@ class productoDAO {
     }
 
     /**
-     * Actualiza un producto existente
+     * Actualiza un producto existente y registra el LOG
      */
     public function modificar($id, $nombre, $descripcion, $precio, $cantidad, $imagen, $id_usuario) {
         $con = DataBase::connect();
         $stmt = $con->prepare("UPDATE producto SET nombre=?, descripcion=?, precio_unidad=?, cantidad=?, imagen=? WHERE id_producto=?");
-        
         $stmt->bind_param("ssdisi", $nombre, $descripcion, $precio, $cantidad, $imagen, $id);
         
         $success = $stmt->execute();
+
         if ($success) {
-            $this->registrarLog($id_usuario, 'UPDATE', "Modificado producto ID: $id", 'producto');
+            $this->registrarLog($con, $id_usuario, 'UPDATE', "Modificado producto ID: $id", 'producto');
         }
+
         $con->close();
         return $success;
     }
 
     /**
-     * Elimina un producto
+     * Elimina un producto y registra el LOG
      */
     public function eliminar($id, $id_admin) {
         $con = DataBase::connect();
@@ -87,21 +85,36 @@ class productoDAO {
         $stmt->bind_param("i", $id);
         
         $success = $stmt->execute();
+
         if ($success) {
-            $this->registrarLog($id_admin, 'DELETE', "Eliminado producto ID: $id", 'producto');
+            $this->registrarLog($con, $id_admin, 'DELETE', "Eliminado producto ID: $id", 'producto');
         }
+
         $con->close();
         return $success;
     }
 
     /**
-     * Auditoría de acciones
+     * Auditoría de acciones (LOGS)
+     * Optimizada para usar la conexión $con existente y evitar errores 500
      */
-    private function registrarLog($user, $acc, $det, $tabla) {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $user, $acc, $det, $tabla);
-        $stmt->execute();
-        $con->close();
+    private function registrarLog($con, $id_user, $accion, $detalle, $tabla) {
+        // Evitamos fallos si la sesión expiró
+        if (empty($id_user)) return; 
+
+        /**
+         * Usamos comillas invertidas en `dia/hora` para evitar errores de sintaxis
+         * Usamos NOW() para que SQL gestione la fecha automáticamente.
+         */
+        $sql = "INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada, `dia/hora`) 
+                VALUES (?, ?, ?, ?, NOW())";
+                
+        $stmt = $con->prepare($sql);
+        
+        if ($stmt) {
+            $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
+            $stmt->execute();
+            $stmt->close();
+        }
     }
 }

@@ -1,16 +1,12 @@
+<link rel="stylesheet" href="view/login/login.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
 <section>
     <div>
-        <div>
-            <?php 
-            if (isset($error) && $error): 
-            ?>
-                <div>
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
+        <div class="login-card">
+            <div id="error-container"></div>
 
-            <form action="index.php?controller=usuario&action=iniciarSesion" method="post">
-                
+            <form id="loginForm" action="index.php?controller=usuario&action=iniciarSesion" method="post">
                 <label for="email">Email:</label>
                 <input type="text" id="email" name="email" required> 
                 
@@ -22,3 +18,19 @@
         </div>
     </div>
 </section>
+
+<?php if (isset($error)): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mensaje = "<?= htmlspecialchars($error) ?>";
+        if (typeof mostrarError === 'function') {
+            mostrarError(mensaje);
+        } else {
+            const container = document.getElementById('error-container');
+            container.innerHTML = `<div class="error-box"><i class="bi bi-exclamation-triangle-fill me-2"></i>${mensaje}</div>`;
+        }
+    });
+</script>
+<?php endif; ?>
+
+<script src="view/login/login.js"></script>

@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: mysqldb-mochistar
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mochistar
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # This line automatically imports your SQL script on first startup:
+      - ./mochistar.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql-data:

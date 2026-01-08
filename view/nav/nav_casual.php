@@ -1,23 +1,15 @@
+<link rel="stylesheet" href="view/nav/nav_styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <header>
     <nav class="nav-principal">
         <div class="nav-logo">
-            <img src="/ruta/a/logo_m+.svg" alt="Logo M+">
+            <img src="view/nav/img/logo.png" alt="Logo M+">
         </div>
 
         <div class="nav-menu">
-            <a href="#">Regala M+</a>
+            <a href="index.php?controller=home&action=ver_home">Inicio</a>
             <span class="separador">•</span>
-            <a href="#">Series</a>
-            <span class="separador">•</span>
-            <a href="#">Cine</a>
-            <span class="separador">•</span>
-            <a href="#">Fútbol</a>
-            <span class="separador">•</span>
-            <a href="#">Calendario deportivo</a>
-            <span class="separador">•</span>
-            <a href="#">Baloncesto</a>
-            <span class="separador">•</span>
-            <a href="#">Más</a>
+            <a href="index.php?controller=producto&action=ver_carta">Carta</a>
         </div>
         
         <div class="nav-acciones">

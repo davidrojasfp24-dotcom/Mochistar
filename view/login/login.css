@@ -1,0 +1,90 @@
+/* Fondo y Reset */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+/* La Card Oscura */
+.login-card {
+    background-color: #1a1a1a;
+    width: 320px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    color: #ffffff;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+/* Inputs Oscuros */
+input {
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #555;
+}
+
+/* Botón Claro */
+button {
+    background-color: #e5e5e5;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #cfcfcf;
+}
+
+/* Caja de Error */
+.error-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(255, 85, 85, 0.15);
+    border: 1px solid #ff5555;
+    color: #ff5555;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

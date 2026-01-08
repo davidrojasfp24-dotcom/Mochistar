@@ -1,0 +1,84 @@
+/* Fondo total */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Centrado del formulario */
+section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px; /* Margen para móviles */
+}
+
+/* La Card pequeña y oscura */
+section > div > div {
+    background-color: #1a1a1a;
+    width: 320px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Etiquetas */
+label {
+    color: #ffffff;
+    font-size: 13px;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+/* Inputs: Texto, Email y Password */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 15px; /* Espaciado entre campos */
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    border-color: #555;
+}
+
+/* Botón Registrarse */
+button[type="submit"] {
+    background-color: #e5e5e5;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+button[type="submit"]:hover {
+    background-color: #cfcfcf;
+}
+
+/* Ocultar los <br> del HTML original para que no rompan el diseño */
+br {
+    display: none;
+}
