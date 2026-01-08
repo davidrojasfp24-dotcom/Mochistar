@@ -2,6 +2,8 @@
 include_once 'controller/homeController.php';
 include_once 'controller/usuarioController.php';
 include_once 'controller/apiController.php';
+include_once 'controller/productoController.php';
+include_once 'controller/carritoController.php';
 
 $defaultController = 'home';
 $defaultAction = 'ver_home';

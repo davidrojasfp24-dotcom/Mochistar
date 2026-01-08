@@ -3,104 +3,100 @@ include_once 'model/usuario.php';
 include_once 'database/database.php';
 include_once 'model/usuarioDAO.php';
 
-class usuarioController{
+class usuarioController {
 
-    public static function getUsuarioByID($id)
-    {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM usuario WHERE id = ?");
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $results = $stmt->get_result();
-
-        $usuario = $results->fetch_object('usuario');
-        $con->close();
-
-        return $usuario;
+    /**
+     * Obtiene un usuario por ID delegando en el DAO
+     */
+    public static function getUsuarioByID($id) {
+        // Delegamos la responsabilidad al DAO
+        return usuarioDAO::getUsuarioByID($id);
     }
 
-    public static function getUsuarios()
-    {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM usuario");
-        $stmt->execute();
-        $results = $stmt->get_result();
-
-        $listaUsuarios = [];
-        while ($usuario = $results->fetch_object('usuario')) {
-            $listaUsuarios[] = $usuario;
-        }
-
-        $con->close();
-        return $listaUsuarios;
+    /**
+     * Obtiene todos los usuarios delegando en el DAO
+     */
+    public static function getUsuarios() {
+        return usuarioDAO::getUsuarios();
     }
 
-    public function iniciarSesion()
-    {
+    /**
+     * Lógica de inicio de sesión
+     */
+    public function iniciarSesion() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
-        session_start();
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['contrasena'])) {
+            $email = $_POST['email'];
+            $pass  = $_POST['contrasena'];
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email']) && isset($_POST['contrasena'])) {
-
-            $email_ingresado = $_POST['email'];
-            $contrasena_ingresada = $_POST['contrasena'];
-
-            $usuario = usuarioDAO::login($email_ingresado, $contrasena_ingresada);
+            // Llamamos al método estático del DAO
+            $usuario = usuarioDAO::login($email, $pass);
 
             if ($usuario) {
+                // Guardamos el objeto usuario en la sesión
                 $_SESSION['usuario'] = $usuario;
                 header('Location: index.php?controller=home&action=ver_home');
-                exit();
             } else {
                 $_SESSION['error_login'] = "Email o contraseña incorrectos.";
                 header('Location: index.php?controller=usuario&action=ver_login');
-                exit();
             }
+            exit();
         }
     }
 
-    public function ver_login(){
+    /**
+     * Lógica de registro de nuevos clientes
+     */
+    public function registrar() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // 1. Creamos el objeto con los datos del formulario
+            $nuevo_usuario = new usuario();
+            $nuevo_usuario->setNombre($_POST['nombre'] ?? '');
+            $nuevo_usuario->setApellido($_POST['apellido'] ?? '');
+            $nuevo_usuario->setEmail($_POST['email'] ?? '');
+            $nuevo_usuario->setTelefono($_POST['telefono'] ?? '');
+            $nuevo_usuario->setRol('cliente'); // Rol por defecto
+            $nuevo_usuario->setContrasena($_POST['contrasena'] ?? '');
+
+            // 2. Intentamos registrar a través del DAO
+            $exito = usuarioDAO::registrarUsuario($nuevo_usuario);
+            
+            if ($exito) {
+                header('Location: index.php?controller=usuario&action=ver_login');
+            } else {
+                $_SESSION['error_registro'] = "Error al crear la cuenta. El email ya podría existir.";
+                header('Location: index.php?controller=usuario&action=ver_registro');
+            }
+            exit();
+        }
+    }
+
+    /**
+     * Carga la vista de Login
+     */
+    public function ver_login() {
         $view = 'view/login/login.php';
         include_once 'view/main.php';
     }
 
-    // En usuarioController.php
-public function registrar() {
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        
-        // 1. Crear un nuevo objeto usuario y asignar datos (asume que los names del formulario son correctos)
-        $nuevo_usuario = new usuario();
-        $nuevo_usuario->setNombre($_POST['nombre'] ?? '');
-        $nuevo_usuario->setApellido($_POST['apellido'] ?? '');
-        $nuevo_usuario->setEmail($_POST['email'] ?? '');
-        $nuevo_usuario->setTelefono($_POST['telefono'] ?? null); // Telefono puede ser opcional
-        $nuevo_usuario->setContrasena($_POST['contrasena'] ?? ''); // ¡Guardamos la contraseña plana temporalmente!
-        
-        // Asignar un rol por defecto (ajusta según tu lógica)
-        $nuevo_usuario->setRol('user'); 
-        
-        // 2. Llamar al DAO para realizar la inserción
-        $exito = usuarioDAO::registrarUsuario($nuevo_usuario);
-        
-        if ($exito) {
-            // Registro exitoso, redirigir al login
-            header('Location: index.php?controller=usuario&action=ver_login');
-            exit();
-        } else {
-            // Fallo en el registro (ej. email ya existe, fallo de DB)
-            // Aquí deberías manejar y mostrar un mensaje de error
-            $_SESSION['error_registro'] = "Error al registrar usuario. El email podría estar en uso.";
-            header('Location: index.php?controller=usuario&action=ver_registro');
-            exit();
-        }
-    }
-    // Si no es POST, redirigir
-    header('Location: index.php?controller=usuario&action=ver_registro');
-    exit();
-}
-
+    /**
+     * Carga la vista de Registro
+     */
     public function ver_registro() {
-    $view = 'view/login/registro.php';
-    include_once 'view/main.php';
-}
+        $view = 'view/login/registro.php';
+        include_once 'view/main.php';
+    }
+
+    /**
+     * Cerrar sesión
+     */
+    public function logout() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        session_destroy();
+        header('Location: index.php');
+        exit();
+    }
 }

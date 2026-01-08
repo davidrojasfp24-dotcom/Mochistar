@@ -79,4 +79,6 @@
         </div>
     </div>
 </div>
-<script src="view/panel/admin.js"></script>
+
+<script src="view/panel/producto.js"></script>
+<script src="view/panel/usuario.js"></script>

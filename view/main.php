@@ -22,16 +22,16 @@ if (isset($_SESSION['usuario'])) {
     
     if ($usuario->getRol() === 'admin') { 
         
-        include 'nav_admin.php';
+        include 'view/nav/nav_admin.php';
         
     } else {
         
-        include 'nav_logged.php';
+        include 'view/nav/nav_logged.php';
     }
     
 } else {
     
-    include 'nav_casual.php';
+    include 'view/nav/nav_casual.php';
 }
 
 ?>

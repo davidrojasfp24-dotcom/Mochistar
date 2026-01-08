@@ -19,5 +19,20 @@
             // Importante para que no cargue el HTML de main.php
             exit; 
         }
+
+        public function usuarios(){
+            $path = 'api/apiUsuarios.php';
+            
+            if (file_exists($path)) {
+                require_once $path;
+            } else {
+                // Respondemos con JSON si el archivo no existe para no romper el frontend
+                header("Content-Type: application/json");
+                echo json_encode(['estado' => 'Fallido', 'mensaje' => 'API de usuarios no encontrada']);
+            }
+            
+            // Fundamental para que no se mezcle con el HTML de las vistas
+            exit; 
+        }
     }
 ?>

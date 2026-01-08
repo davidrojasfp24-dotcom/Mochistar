@@ -1,34 +1,17 @@
 <?php
-include_once 'model/producto.php';
-include_once 'database/database.php';
+include_once 'model/productoDAO.php';
 
 class productoController {
+    
+    public function ver_carta(){
+        // 1. Aquí es donde se obtienen los productos
+        // Usamos el DAO que ya sabe cómo conectarse a la base de datos
+        $productos = ProductoDAO::getProductos(); 
 
-    public static function getProductoByID($id){
-        $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM producto WHERE id = ?");
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $results = $stmt->get_result();
+        // 2. Definimos qué vista cargar
+        $view = 'view/carta/carta.php';
 
-        $producto = $results->fetch_object('producto');
-        $con->close();
-        return $producto;
-    }
-
-    public static function getProductos(){
-        $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM producto");
-        $stmt->execute();
-        $results = $stmt->get_result();
-
-        $listaProductos = [];
-        while ($producto = $results->fetch_object('producto')) {
-            $listaProductos[] = $producto;
-        }
-
-        $con->close();
-        return $listaProductos;
+        // 3. Al incluir main.php, la variable $productos ya existe y la vista la puede usar
+        include_once 'view/main.php';
     }
 }
-?>

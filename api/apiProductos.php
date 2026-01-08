@@ -131,5 +131,4 @@ try {
 } catch (Exception $e) {
     respuestaJSON('Fallido', null, 'Error crítico: ' . $e->getMessage(), 500);
 }
-
-// IMPORTANTE: NO pongas la etiqueta de cierre ?>
+?>

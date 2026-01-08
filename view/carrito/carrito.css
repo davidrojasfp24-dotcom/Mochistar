@@ -1,0 +1,106 @@
+/* Items del carrito */
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.cart-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-right: 20px;
+    background-color: #333;
+}
+
+.cart-item-info {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Resumen de texto */
+.summary-section p {
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.total-text {
+    font-size: 1.5rem;
+    border-top: 1px solid #444;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+/* Fondo oscuro para toda la vista */
+.cart-main-container {
+    background-color: #000;
+    min-height: 100vh;
+}
+
+/* Caja de la tarjeta (recuadro azul fino) */
+.last-card-box {
+    border: 1px solid #00a8ff;
+    padding: 40px;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+}
+
+/* Botón "Cambiar método" */
+.btn-cambiar-metodo {
+    background-color: #00a8ff;
+    color: white;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+}
+
+/* Botón "Finalizar compra" gigante */
+.btn-finalizar-compra {
+    background-color: #00a8ff;
+    color: white;
+    border: none;
+    padding: 20px;
+    border-radius: 40px;
+    font-size: 2.2rem;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Botones de + y - */
+.btn-qty {
+    background-color: transparent;
+    border: 1px solid #00a8ff;
+    color: #00a8ff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-qty:hover {
+    background-color: #00a8ff;
+    color: white;
+}
+
+/* Botón eliminar */
+.btn-remove {
+    background-color: transparent;
+    border: none;
+    color: #ff4d4d;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-remove:hover {
+    color: #ff0000;
+    text-decoration: underline;
+}

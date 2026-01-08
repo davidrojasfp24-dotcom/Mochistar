@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="view/nav_styles.css">
+<link rel="stylesheet" href="view/nav/nav_styles.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <header>
     <nav class="nav-principal">
@@ -23,7 +23,6 @@
         </div>
         
         <div class="nav-acciones">
-            <a href="index.php?controller=api&action=ver_admin">Panel admin</a>
             <img src="" alt="carrito de compras">      
             <img src="" alt="Icono de usuario">
         </div>
