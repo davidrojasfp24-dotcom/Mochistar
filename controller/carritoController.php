@@ -4,14 +4,13 @@
 class carritoController {
 
     public function ver_carrito(){
-        // 1. Aquí es donde se obtienen los productos
-        // Usamos el DAO que ya sabe cómo conectarse a la base de datos
+        //Usamos el DAO para conectarse a la base de datos
         $productos = ProductoDAO::getProductos(); 
 
-        // 2. Definimos qué vista cargar
+        //Ponemos lo que queremos ver en la vista
         $view = 'view/carrito/carrito.php';
 
-        // 3. Al incluir main.php, la variable $productos ya existe y la vista la puede usar
+        //La variable ya existe y la vista la puede usar
         include_once 'view/main.php';
     }
 }

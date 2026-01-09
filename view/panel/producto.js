@@ -1,16 +1,11 @@
-/**
- * GESTIÓN DE PRODUCTOS (MOCHIS)
- */
+// Variable para controlar el pop-up (modal) de los productos
 let instanceModalProducto = null;
 
-/**
- * 1. Cargar la tabla de productos
- * Se ejecuta cuando pulsas "Productos" en el sidebar
- */
+//Función para construir y mostrar la tabla de productos en el panel
 async function cargarSeccionProductos() {
     const contenedor = document.getElementById('contenedor-principal');
-    
-    // Dibujamos la estructura de la tabla
+
+    //Dibujamos la estructura de la tabla con sus encabezados
     contenedor.innerHTML = `
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-white">Gestión de Productos</h2>
@@ -36,11 +31,13 @@ async function cargarSeccionProductos() {
         </div>`;
 
     try {
+        //Llamamos a la API para obtener la lista de todos los mochis
         const response = await fetch('index.php?controller=api&action=productos');
         const res = await response.json();
 
         const tbody = document.getElementById('tabla-productos-body');
 
+        //Si la respuesta es positiva y hay productos, los pintamos fila por fila
         if (res.estado === 'Exito' && res.data.length > 0) {
             tbody.innerHTML = res.data.map(p => `
                 <tr>
@@ -75,22 +72,20 @@ async function cargarSeccionProductos() {
     }
 }
 
-/**
- * 2. Lógica del Modal (Abrir para crear o editar)
- */
+//Función para abrir el formulario (vacío para nuevo, o relleno para editar)
 function abrirModalProducto(datos = null) {
     if (!instanceModalProducto) {
         instanceModalProducto = new bootstrap.Modal(document.getElementById('modalProducto'));
     }
 
     const form = document.getElementById('formProducto');
-    form.reset();
-    
-    // Limpiamos el ID oculto
+    form.reset(); //Limpiamos los campos
+
+    //El campo oculto del ID lo ponemos vacío por defecto
     document.getElementById('id_producto').value = "";
 
     if (datos) {
-        // Si vienen datos, es MODO EDICIÓN
+        // --- MODO EDICIÓN ---
         document.getElementById('modalTitulo').innerText = "Editar Producto #" + datos.id_producto;
         document.getElementById('id_producto').value = datos.id_producto;
         document.getElementById('nombre').value = datos.nombre;
@@ -99,16 +94,14 @@ function abrirModalProducto(datos = null) {
         document.getElementById('cantidad').value = datos.cantidad;
         document.getElementById('imagen').value = datos.imagen;
     } else {
-        // Si no vienen datos, es MODO NUEVO
+        // --- MODO NUEVO ---
         document.getElementById('modalTitulo').innerText = "Nuevo Producto";
     }
 
     instanceModalProducto.show();
 }
 
-/**
- * 3. Obtener datos de un producto específico para editar
- */
+//Busca la información de un mochi concreto para cargarla en el modal
 async function editarProducto(id) {
     try {
         const response = await fetch(`index.php?controller=api&action=productos&id=${id}`);
@@ -123,13 +116,11 @@ async function editarProducto(id) {
     }
 }
 
-/**
- * 4. Guardar datos (POST para crear, PUT para actualizar)
- */
+//Recoge los datos del formulario y decide si debe CREAR o ACTUALIZAR
 async function guardarProducto() {
     const id = document.getElementById('id_producto').value;
-    
-    // Recolectamos los datos del formulario
+
+    //Creamos el objeto con los datos, asegurando que los números sean números
     const datos = {
         nombre: document.getElementById('nombre').value,
         descripcion: document.getElementById('descripcion').value,
@@ -138,26 +129,27 @@ async function guardarProducto() {
         imagen: document.getElementById('imagen').value || 'default.png'
     };
 
-    // Validaciones básicas
+    //Validación rápida antes de enviar al servidor
     if (!datos.nombre || isNaN(datos.precio_unidad)) {
         return alert("Por favor, rellena los campos obligatorios.");
     }
 
-    // Si hay ID, lo añadimos al objeto para que el backend sepa cuál editar
+    //Si el ID existe, lo añadimos al objeto para que la API sepa cuál editar
     if (id) datos.id_producto = id;
 
     try {
         const response = await fetch('index.php?controller=api&action=productos', {
+            //El truco: si hay ID usamos PUT (actualizar), si no, usamos POST (crear)
             method: id ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datos)
         });
 
         const res = await response.json();
-        
+
         if (res.estado === 'Exito') {
-            instanceModalProducto.hide();
-            cargarSeccionProductos(); // Recargamos la tabla para ver los cambios
+            instanceModalProducto.hide(); //Cerramos el pop-up
+            cargarSeccionProductos();     //Refrescamos la tabla
         } else {
             alert("Error del servidor: " + res.mensaje);
         }
@@ -166,9 +158,7 @@ async function guardarProducto() {
     }
 }
 
-/**
- * 5. Eliminar un producto (DELETE)
- */
+//Función para borrar un producto tras confirmar con el administrador
 async function confirmarEliminar(id) {
     if (!confirm("¿Estás seguro de que deseas eliminar este mochi? Esta acción no se puede deshacer.")) return;
 
@@ -178,11 +168,11 @@ async function confirmarEliminar(id) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: id })
         });
-        
+
         const res = await response.json();
-        
+
         if (res.estado === 'Exito') {
-            cargarSeccionProductos();
+            cargarSeccionProductos(); //Actualizamos la lista automáticamente
         } else {
             alert("No se pudo eliminar: " + res.mensaje);
         }

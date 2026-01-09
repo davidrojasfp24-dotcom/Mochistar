@@ -1,72 +1,72 @@
 <?php
+//Importamos el modelo de usuario y la base de datos para que todo funcione
 include_once 'model/usuario.php';
 include_once 'database/database.php';
 include_once 'model/usuarioDAO.php';
 
 class usuarioController {
 
-    /**
-     * Obtiene un usuario por ID delegando en el DAO
-     */
+    //Buscamos un usuario específico usando su ID
     public static function getUsuarioByID($id) {
-        // Delegamos la responsabilidad al DAO
+        // Le pasamos el trabajo al DAO para que lo busque en la base de datos
         return usuarioDAO::getUsuarioByID($id);
     }
 
-    /**
-     * Obtiene todos los usuarios delegando en el DAO
-     */
+    //Pedimos la lista completa de todos los usuarios registrados
     public static function getUsuarios() {
         return usuarioDAO::getUsuarios();
     }
 
-    /**
-     * Lógica de inicio de sesión
-     */
+    //Aquí controlamos cuando alguien intenta entrar con su cuenta
     public function iniciarSesion() {
+        //Arrancamos la sesión si no estaba abierta ya
         if (session_status() === PHP_SESSION_NONE) session_start();
 
+        //Miramos si nos han enviado el email y la contraseña por el formulario (POST)
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'], $_POST['contrasena'])) {
             $email = $_POST['email'];
             $pass  = $_POST['contrasena'];
 
-            // Llamamos al método estático del DAO
+            //Le preguntamos al DAO si este usuario existe y si la contraseña coincide
             $usuario = usuarioDAO::login($email, $pass);
 
             if ($usuario) {
-                // Guardamos el objeto usuario en la sesión
+                //Si todo está bien, guardamos al usuario en la sesión para que la web lo reconozca
                 $_SESSION['usuario'] = $usuario;
+                //Lo mandamos directos a la Home
                 header('Location: index.php?controller=home&action=ver_home');
             } else {
+                //Si falla, guardamos un mensaje de error para avisar al usuario
                 $_SESSION['error_login'] = "Email o contraseña incorrectos.";
+                //Lo mandamos de vuelta al login para que lo intente otra vez
                 header('Location: index.php?controller=usuario&action=ver_login');
             }
-            exit();
+            exit(); //Cortamos aquí para que no se ejecute nada más
         }
     }
 
-    /**
-     * Lógica de registro de nuevos clientes
-     */
+    //Lógica para crear una cuenta nueva a los clientes
     public function registrar() {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // 1. Creamos el objeto con los datos del formulario
+            //Creamos un objeto vacío y lo rellenamos con lo que el usuario ha puesto en el formulario
             $nuevo_usuario = new usuario();
             $nuevo_usuario->setNombre($_POST['nombre'] ?? '');
             $nuevo_usuario->setApellido($_POST['apellido'] ?? '');
             $nuevo_usuario->setEmail($_POST['email'] ?? '');
             $nuevo_usuario->setTelefono($_POST['telefono'] ?? '');
-            $nuevo_usuario->setRol('cliente'); // Rol por defecto
+            $nuevo_usuario->setRol('cliente'); //A todos los nuevos les ponemos el rol de cliente por defecto
             $nuevo_usuario->setContrasena($_POST['contrasena'] ?? '');
 
-            // 2. Intentamos registrar a través del DAO
+            //Le decimos al DAO que intente guardar este nuevo usuario en la base de datos
             $exito = usuarioDAO::registrarUsuario($nuevo_usuario);
             
             if ($exito) {
+                //Si se crea bien, lo mandamos a la pantalla de login para que entre
                 header('Location: index.php?controller=usuario&action=ver_login');
             } else {
+                //Si falla (por ejemplo, si el email ya existe), avisamos del error
                 $_SESSION['error_registro'] = "Error al crear la cuenta. El email ya podría existir.";
                 header('Location: index.php?controller=usuario&action=ver_registro');
             }
@@ -74,28 +74,25 @@ class usuarioController {
         }
     }
 
-    /**
-     * Carga la vista de Login
-     */
+    //Carga la pantalla donde el usuario pone sus datos para entrar
     public function ver_login() {
         $view = 'view/login/login.php';
+        //Usamos el main.php para que se vea el menú y el pie de página
         include_once 'view/main.php';
     }
 
-    /**
-     * Carga la vista de Registro
-     */
+    //Carga la pantalla para que los nuevos clientes se apunten
     public function ver_registro() {
         $view = 'view/login/registro.php';
         include_once 'view/main.php';
     }
 
-    /**
-     * Cerrar sesión
-     */
+    //Función para cerrar la sesión y salir de la cuenta
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) session_start();
+        //Borramos todos los datos de la sesión
         session_destroy();
+        //Mandamos al usuario a la página principal de la web
         header('Location: index.php');
         exit();
     }
