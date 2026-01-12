@@ -5,39 +5,64 @@ require_once 'model/producto.php';
 
 class productoDAO {
 
-    //Buscamos un producto específico usando su ID único
-    public static function getProductoByID($id) {
-        // Conectamos con la base de datos
-        $con = DataBase::connect();
-        //Usamos el "?" para que la consulta sea segura contra ataques
-        $stmt = $con->prepare("SELECT * FROM producto WHERE id_producto = ?");
-        $stmt->bind_param('i', $id); //La "i" indica que el ID es un número entero
-        $stmt->execute();
-        $results = $stmt->get_result();
-
-        //Guardamos el resultado en un formato que PHP entienda fácilmente
-        $producto = $results->fetch_assoc(); 
-        $con->close();
-
-        return $producto;
-    }
-
-    //Sacamos la lista de todos los productos que tenemos en la base de datos
     public static function getProductos() {
         $con = DataBase::connect();
-        //Ordenamos por ID de forma descendente para que los últimos productos creados salgan los primeros
-        $stmt = $con->prepare("SELECT * FROM producto ORDER BY id_producto DESC");
-        $stmt->execute();
-        $results = $stmt->get_result();
 
-        //Creamos una lista vacía y la vamos rellenando con cada producto
+        $sql = "SELECT * FROM producto ORDER BY id_producto DESC";
+        $stmt = $con->prepare($sql);
+
+        if (!$stmt) {
+            die("Error en prepare(): " . $con->error);
+        }
+
+        if (!$stmt->execute()) {
+            die("Error en execute(): " . $stmt->error);
+        }
+
+        $results = $stmt->get_result();
+        if (!$results) {
+            die("Error al obtener resultados: " . $stmt->error);
+        }
+
         $listaProductos = [];
         while ($producto = $results->fetch_assoc()) {
             $listaProductos[] = $producto;
         }
 
+        $stmt->close();
         $con->close();
+
         return $listaProductos;
+    }
+
+    // Obtener un producto por ID
+    public static function getProductoByID($id) {
+        $con = DataBase::connect();
+
+        $stmt = $con->prepare("SELECT * FROM producto WHERE id_producto = ?");
+        if (!$stmt) {
+            die("Error en prepare(): " . $con->error);
+        }
+
+        if (!$stmt->bind_param('i', $id)) {
+            die("Error en bind_param(): " . $stmt->error);
+        }
+
+        if (!$stmt->execute()) {
+            die("Error en execute(): " . $stmt->error);
+        }
+
+        $results = $stmt->get_result();
+        if (!$results) {
+            die("Error al obtener resultados: " . $stmt->error);
+        }
+
+        $producto = $results->fetch_assoc();
+
+        $stmt->close();
+        $con->close();
+
+        return $producto;
     }
 
     //Añadimos un producto nuevo a la base de datos
