@@ -1,3 +1,9 @@
 .separar{
     padding-top: 100px;
 }
+
+html, body {
+    background-color: black !important;
+    color: white; /* Para que los textos generales se vean */
+    min-height: 100vh;
+}

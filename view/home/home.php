@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="view/home/homeStyles.css?v=1.1">
+<link rel="stylesheet" href="view/home/homeStyles.css?v=1.2">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <div id="carouselExampleAutoplaying" class="carousel slide carousel-fade" data-bs-ride="carousel">
     

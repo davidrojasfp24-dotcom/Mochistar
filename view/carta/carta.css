@@ -1,21 +1,46 @@
-/* Contenedor principal de la tarjeta */
+/* ==========================================================================
+   FONDO GENERAL
+   ========================================================================== */
+html, body {
+    background-color: #000000 !important; /* Negro puro de fondo */
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   TARJETA MOCHI (#1F1F1F)
+   ========================================================================== */
 .mochi-card {
-    background-color: #000000; /* CAMBIADO: Negro puro */
-    border-radius: 25px;
-    padding: 20px;
+    background-color: #1F1F1F !important; /* Gris muy oscuro solicitado */
+    border-radius: 24px;
+    padding: 16px;
     height: 100%;
     display: flex;
     flex-direction: column;
-    border: 1px solid #1a1a1a;    /* Borde casi invisible para dar profundidad */
+    /* Un borde un poco más claro para que se vea la silueta sobre el negro */
+    border: 1px solid #333333 !important; 
+    transition: all 0.3s ease-in-out;
+    box-sizing: border-box;
 }
 
-/* El recuadro de la imagen (Ahora negro) */
+.mochi-card:hover {
+    transform: translateY(-8px);
+    border-color: #0095ff !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================================================
+   CONTENEDOR DE IMAGEN (EL CAMBIO CLAVE)
+   ========================================================================== */
 .mochi-img-container {
-    background-color: #000000;    /* CAMBIADO: De blanco a negro */
-    border-radius: 20px;
+    background-color: #2a2a2a; /* Fondo neutro por si la imagen tarda en cargar */
+    border-radius: 18px;
     overflow: hidden;
-    margin-bottom: 15px;
-    aspect-ratio: 1 / 1;
+    margin-bottom: 16px;
+    width: 100%;
+    height: 200px; /* Altura fija para que todas las filas estén alineadas */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,67 +49,87 @@
 .mochi-img-container img {
     width: 100%;
     height: 100%;
+    /* 'cover' hace que la imagen llene el cuadro sin dejar espacios negros/blancos */
     object-fit: cover; 
-    /* Si tus imágenes tienen fondo blanco y quieres que se vea negro, 
-       necesitarás que sean imágenes con fondo transparente (PNG o WebP) */
+    display: block;
+    transition: transform 0.5s ease;
 }
 
-/* Títulos y textos */
+.mochi-card:hover .mochi-img-container img {
+    transform: scale(1.1); /* Zoom suave al pasar el ratón */
+}
+
+/* ==========================================================================
+   TEXTOS
+   ========================================================================== */
+.mochi-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .mochi-title {
     color: #ffffff;
     font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 5px;
-    min-height: 3rem;         /* Mantiene los títulos alineados aunque sean largos */
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+.mochi-description {
+    color: #a0a0a0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    /* Cortar texto a 2 líneas para uniformidad */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
 }
 
 .mochi-link {
-    color: #0095ff;           /* Azul de los enlaces */
+    color: #0095ff;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 15px;
 }
 
-/* Precio y Botón */
+.mochi-link:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   PRECIO Y BOTÓN
+   ========================================================================== */
 .mochi-footer {
-    margin-top: auto;         /* Empuja el precio y botón al final */
-    padding-top: 20px;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .mochi-price {
-    display: block;
-    color: #ffffff;
     font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
+    font-weight: 800;
+    color: #ffffff;
 }
 
 .btn-comprar {
-    background-color: #0095ff; /* Azul Mochistar */
-    color: white;
+    background-color: #0095ff;
+    color: #ffffff;
     border: none;
     width: 100%;
     padding: 12px;
-    border-radius: 15px;      /* Botón redondeado */
-    font-weight: bold;
+    border-radius: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
     letter-spacing: 1px;
-    transition: background 0.3s;
+    transition: all 0.2s ease;
 }
 
 .btn-comprar:hover {
     background-color: #007acc;
+    transform: scale(1.02);
 }
-
-.mochi-description {
-    color: #cccccc;
-    font-size: 0.9rem;
-    margin: 10px 0;
-    line-height: 1.4;
-
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-
-    max-height: 2.8em;   /* ← CLAVE */
-    overflow: hidden;
-}
-
