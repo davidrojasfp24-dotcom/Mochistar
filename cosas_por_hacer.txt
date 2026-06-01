@@ -1,0 +1,23 @@
+Proy 1
+-Prueba validación
+-Lista de tareas
+-Optimización del código
+-Diaframa de clases
+-JS avanzado min 3
+-Sesiones y cookies
+-JS básico
+-Eventos JS -onclick no -listeners si
+-DOM
+-AJAX
+-PHP integración HTML
+-Clases JS
+-Footer
+-Falta titulo de pagina (Todas)
+-Perfil
+-Logos/iconos svg
+-Método de pago
+-Paguina detalle producto
+-Tipografia
+-Botones más cuadrados
+-Migas de pan
+-Menu responsive
