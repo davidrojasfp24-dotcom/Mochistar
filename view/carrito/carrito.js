@@ -155,20 +155,52 @@ function renderizarCarrito() {
 
 // --- FINALIZAR LA COMPRA ---
 
-function finalizarCompra() {
+async function finalizarCompra() {
     const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
+
     if (carrito.length === 0) {
         alert("Añade algún producto antes de finalizar.");
         return;
     }
 
-    //Pedimos confirmación al usuario antes de borrar los datos
-    if (confirm("¿Confirmar pedido y realizar pago?")) {
-        alert("¡Compra realizada con éxito! Recibirás un correo de confirmación.");
-        //Limpiamos el carrito de la memoria para que la siguiente compra empiece de cero
-        localStorage.removeItem('carrito');
-        //Redirigimos al inicio
-        window.location.href = "index.php"; 
+    if (!confirm("¿Confirmar pedido y realizar pago?")) return;
+
+    // Calculamos el total con IVA
+    const subtotal = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+    const total    = subtotal * 1.10;
+
+    // Preparamos el payload que la API espera
+    const payload = {
+        total: parseFloat(total.toFixed(2)),
+        lineas: carrito.map(item => ({
+            id:       item.id,
+            precio:   item.precio,
+            cantidad: item.cantidad
+        }))
+    };
+
+    try {
+        const response = await fetch('index.php?controller=api&action=pedidos', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload)
+        });
+
+        const res = await response.json();
+
+        if (res.estado && res.estado.toLowerCase() === 'exito') {
+            // Limpiamos el carrito y redirigimos
+            localStorage.removeItem('carrito');
+            alert(`¡Pedido #${res.data.id_pedido} realizado con éxito! Recibirás confirmación en breve.`);
+            window.location.href = "index.php";
+        } else if (res.requiere_login) {
+            alert("Debes iniciar sesión para finalizar la compra.");
+            window.location.href = "index.php?controller=usuario&action=ver_login";
+        } else {
+            alert("Error al procesar el pedido: " + (res.mensaje || "Error desconocido."));
+        }
+    } catch (e) {
+        console.error("Error al finalizar compra:", e);
+        alert("Error de conexión. Por favor inténtalo de nuevo.");
     }
-}
+}

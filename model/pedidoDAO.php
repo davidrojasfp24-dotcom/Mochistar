@@ -61,16 +61,61 @@ class pedidoDAO {
         return $success;
     }
 
+    // Crear un pedido completo con sus líneas de pedido (transacción atómica)
+    public static function crearPedido($id_usuario, $total, $lineas) {
+        $con = DataBase::connect();
+        $con->begin_transaction();
+
+        try {
+            // 1. Insertar el pedido principal
+            $fecha  = date('Y-m-d H:i:s');
+            $estado = 'Pendiente';
+            $stmt = $con->prepare("INSERT INTO pedido (estado, fecha, precio, id_usuario) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param('ssdi', $estado, $fecha, $total, $id_usuario);
+            $stmt->execute();
+            $id_pedido = $stmt->insert_id;
+            $stmt->close();
+
+            // 2. Insertar cada línea de pedido
+            $stmtLinea = $con->prepare(
+                "INSERT INTO linea_pedido (precio_unidad, cantidad, porcentaje_descuento, id_pedido, id_producto) VALUES (?, ?, ?, ?, ?)"
+            );
+            foreach ($lineas as $linea) {
+                $precio    = floatval($linea['precio']);
+                $cantidad  = intval($linea['cantidad']);
+                $descuento = null; // sin descuento por defecto
+                $stmtLinea->bind_param('diidi', $precio, $cantidad, $descuento, $id_pedido, $linea['id']);
+                $stmtLinea->execute();
+            }
+            $stmtLinea->close();
+
+            $con->commit();
+            $con->close();
+            return $id_pedido;
+
+        } catch (Exception $e) {
+            $con->rollback();
+            $con->close();
+            return false;
+        }
+    }
+
     //Guarda todas las acciones importantes que hace el administrador
     private function registrarLog($id_user, $accion, $detalle, $tabla) {
-        $con = DataBase::connect();
-        //Insertamos los datos en la tabla de logs para que nada se pierda
-        $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
-        
-        //i = número, s = texto. Ponemos los datos en orden
-        $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
-        $stmt->execute();
-        
-        $con->close();
+        try {
+            $con = DataBase::connect();
+            //Insertamos los datos en la tabla de logs para que nada se pierda
+            $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
+            
+            if ($stmt) {
+                //i = número, s = texto. Ponemos los datos en orden
+                $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
+                $stmt->execute();
+                $stmt->close();
+            }
+            $con->close();
+        } catch (Exception $e) {
+            // Ignoramos errores de registro de log para evitar que la operación principal falle
+        }
     }
-}
+}

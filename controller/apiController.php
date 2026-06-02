@@ -43,25 +43,36 @@ class apiController
         exit;
     }
 
-    // public function pedidos(){
-    //     $path = 'api/apiPedido.php';
-    //     if (file_exists($path)) {
-    //         require_once $path;
-    //     } else {
-    //         header("Content-Type: application/json");
-    //         echo json_encode(['estado' => 'Error', 'mensaje' => 'API de pedidos no encontrada']);
-    //     }
-    //     exit; 
-    // }
+    public function pedidos(){
+        $path = 'api/apiPedido.php';
+        if (file_exists($path)) {
+            require_once $path;
+        } else {
+            header("Content-Type: application/json");
+            echo json_encode(['estado' => 'Error', 'mensaje' => 'API de pedidos no encontrada']);
+        }
+        exit; 
+    }
 
-    // public function logs(){
-    //     $path = 'api/apiLog.php';
-    //     if (file_exists($path)) {
-    //         require_once $path;
-    //     } else {
-    //         header("Content-Type: application/json");
-    //         echo json_encode(['estado' => 'Error', 'mensaje' => 'API de logs no encontrada']);
-    //     }
-    //     exit; 
-    // }
+    public function logs(){
+        $path = 'api/apiLog.php';
+        if (file_exists($path)) {
+            require_once $path;
+        } else {
+            header("Content-Type: application/json");
+            echo json_encode(['estado' => 'Error', 'mensaje' => 'API de logs no encontrada']);
+        }
+        exit; 
+    }
+
+    public function ofertas(){
+        $path = 'api/apiOferta.php';
+        if (file_exists($path)) {
+            require_once $path;
+        } else {
+            header("Content-Type: application/json");
+            echo json_encode(['estado' => 'Error', 'mensaje' => 'API de ofertas no encontrada']);
+        }
+        exit; 
+    }
 }

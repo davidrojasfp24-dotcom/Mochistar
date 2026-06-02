@@ -1,141 +1,143 @@
 <?php
-//Borra cualquier cosa que se haya intentado escribir antes
-while (ob_get_level() > 0) {
-    ob_end_clean();
-}
-ob_start();
+// API REST para gestión de productos
+include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/../model/productoDAO.php';
 
-//Inicia la sesión para saber quién está conectado
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Verificar que el usuario tenga permisos de administrador
+verificarAdmin();
 
-error_reporting(E_ALL);
-ini_set('display_errors', 0); //No ensuciar la salida con texto de errores
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-//Importa los archivos necesarios
-require_once 'database/database.php';
-require_once 'model/producto.php';
-require_once 'model/productoDAO.php';
-
-//Funcion para enviar respuestas JSON
-function respuestaJSON($estado, $data = null, $mensaje = '', $codigo = 200)
-{
-    //Limpiamos para que no haya nada
-    if (ob_get_length()) ob_clean();
-
-    //Avisa que viene JSON
-    header("Content-Type: application/json; charset=UTF-8");
-    http_response_code($codigo);
-
-    //Convierte el array de PHP en un texto que JavaScript puede leer
-    echo json_encode([
-        'estado' => $estado,
-        'data' => $data,
-        'mensaje' => $mensaje
-    ], JSON_UNESCAPED_UNICODE);
-
-    // Cerramos el buffer y enviamos
-    ob_end_flush();
-    exit;
-}
-
-try {
-    //Revisar si la sesion esta iniciada
-    if (!isset($_SESSION['usuario'])) {
-        respuestaJSON('Fallido', null, 'Sesión no válida o expirada', 401);
-    }
-
-    $metodo = $_SERVER['REQUEST_METHOD'];
-    $dao = new productoDAO();
-    $id_admin = $_SESSION['usuario']->getId();
-
-    //Hacemos un menu para cada metodo
-    switch ($metodo) {
-        //Hacemos el GET que es para sacar los productos de la base de datos
-        case 'GET':
-            //Cogemos el id de cada producto
-            if (isset($_GET['id'])) {
-                $producto = productoDAO::getProductoByID(intval($_GET['id']));
-                //Si lo encuentra, lo devuelve, si no, avisa que no lo ha encontrado
-                $producto ? respuestaJSON('Exito', $producto) : respuestaJSON('Fallido', null, 'No encontrado', 404);
-            } else {
-                //Pide los productos
-                $productos = productoDAO::getProductos();
-                respuestaJSON('Exito', $productos);
-            }
-            break;
-        //Hacemos el POST que es para crear un nuevo producto
-        case 'POST':
-
-            //Llegan los datos en JSON
-            $input = file_get_contents("php://input");
-            //Pasamos el JSON a un array de PHP
-            $data = json_decode($input, true);
-            //Revisamos que vengan los datos necesarios
-            if (isset($data['nombre'], $data['precio_unidad'], $data['cantidad'])) {
-                $res = $dao->crear(
-                    $data['nombre'],
-                    $data['descripcion'] ?? '',
-                    $data['precio_unidad'],
-                    $data['cantidad'],
-                    $data['imagen'] ?? 'default.png',
-                    $id_admin
-                );
-                //Se ha creado correctamente
-                $res ? respuestaJSON('Exito', null, 'Producto creado', 201) : respuestaJSON('Fallido', null, 'Error BD', 500);
-            //No se ha creado
-            } else {
-                respuestaJSON('Fallido', null, 'Datos incompletos', 400);
-            }
-            break;
-        //Hacemos el PUT que es para modificar un producto
-        case 'PUT':
-            //Llegan los datos en JSON
-            $input = file_get_contents("php://input");
-            //Pasamos el JSON a un array de PHP
-            $data = json_decode($input, true);
-            //Revisamos que vengan los datos necesarios
-            if (isset($data['id_producto'])) {
-                $res = $dao->modificar(
-                    $data['id_producto'],
-                    $data['nombre'],
-                    $data['descripcion'] ?? '',
-                    $data['precio_unidad'],
-                    $data['cantidad'],
-                    $data['imagen'] ?? 'default.png',
-                    $id_admin
-                );
-                //Se ha guardado correctamente
-                $res ? respuestaJSON('Exito', null, 'Producto actualizado') : respuestaJSON('Fallido', null, 'Error al actualizar', 500);
-            //No se ha modificado
-            } else {
-                respuestaJSON('Fallido', null, 'ID no proporcionado', 400);
-            }
-            break;
-        //Hacemos el DELETE que es para borrar un producto
-        case 'DELETE':
-            //Llegan los datos en JSON
-            $input = file_get_contents("php://input");
-            //Pasamos el JSON a un array de PHP
-            $data = json_decode($input, true);
-            $id = $data['id'] ?? $_GET['id'] ?? null;
-            //Miramos si existe el id
+switch ($metodo) {
+    case 'GET':
+        if (isset($_GET['id'])) {
+            obtenerProducto($_GET['id']);
+        } else {
+            obtenerProductos();
+        }
+        break;
+    case 'POST':
+        crearProducto();
+        break;
+    case 'PUT':
+        actualizarProducto();
+        break;
+    case 'DELETE':
+        // El ID de producto a eliminar se puede recibir por parámetro GET (?id=...) o en el cuerpo JSON
+        if (isset($_GET['id'])) {
+            eliminarProducto($_GET['id']);
+        } else {
+            $data = json_decode(file_get_contents("php://input"), true);
+            $id = isset($data['id']) ? $data['id'] : (isset($data['id_producto']) ? $data['id_producto'] : null);
             if ($id) {
-                //Se hace la funcion de eliminar
-                $res = $dao->eliminar($id, $id_admin);
-                $res ? respuestaJSON('Exito', null, 'Producto eliminado') : respuestaJSON('Fallido', null, 'Error al borrar', 500);
-            //No se ha encontrado id
+                eliminarProducto($id);
             } else {
-                respuestaJSON('Fallido', null, 'ID no proporcionado', 400);
+                respuestaJSON('Fallido', null, 'ID de producto requerido', 400);
             }
-            break;
-        //Si no es ninguno de los metodos anteriores falla
-        default:
-            respuestaJSON('Fallido', null, 'Método no permitido', 405);
-            break;
+        }
+        break;
+    default:
+        respuestaJSON('Fallido', null, 'Método no permitido', 405);
+}
+
+// Obtener todos los productos
+function obtenerProductos() {
+    $productos = productoDAO::getProductos();
+    respuestaJSON('Exito', $productos ? $productos : []);
+}
+
+// Obtener un producto específico
+function obtenerProducto($id) {
+    $producto = productoDAO::getProductoByID(intval($id));
+    if ($producto) {
+        respuestaJSON('Exito', $producto);
+    } else {
+        respuestaJSON('Fallido', null, 'Producto no encontrado', 404);
     }
-//No encuentra base de datos
-} catch (Exception $e) {
-    respuestaJSON('Fallido', null, 'Error crítico: ' . $e->getMessage(), 500);
+}
+
+// Crear un nuevo producto
+function crearProducto() {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (!isset($data['nombre']) || !isset($data['precio_unidad']) || !isset($data['cantidad'])) {
+        respuestaJSON('Fallido', null, 'Datos incompletos: nombre, precio_unidad y cantidad son requeridos', 400);
+        return;
+    }
+
+    $nombre = $data['nombre'];
+    $descripcion = isset($data['descripcion']) ? $data['descripcion'] : '';
+    $precio = floatval($data['precio_unidad']);
+    $cantidad = intval($data['cantidad']);
+    $imagen = isset($data['imagen']) ? $data['imagen'] : 'default.png';
+
+    $id_admin = isset($_SESSION['usuario']) ? $_SESSION['usuario']->getId() : 0;
+
+    $dao = new productoDAO();
+    $resultado = $dao->crear($nombre, $descripcion, $precio, $cantidad, $imagen, $id_admin);
+
+    if ($resultado) {
+        respuestaJSON('Exito', null, 'Producto creado correctamente', 201);
+    } else {
+        respuestaJSON('Fallido', null, 'Error al crear el producto en la base de datos', 500);
+    }
+}
+
+// Actualizar un producto
+function actualizarProducto() {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (!isset($data['id_producto'])) {
+        respuestaJSON('Fallido', null, 'ID de producto requerido', 400);
+        return;
+    }
+
+    $id_producto = intval($data['id_producto']);
+    
+    // Obtener el producto actual de la BD para conservar campos no especificados
+    $productoActual = productoDAO::getProductoByID($id_producto);
+    if (!$productoActual) {
+        respuestaJSON('Fallido', null, 'Producto no encontrado', 404);
+        return;
+    }
+
+    $nombre = isset($data['nombre']) ? $data['nombre'] : $productoActual['nombre'];
+    $descripcion = isset($data['descripcion']) ? $data['descripcion'] : $productoActual['descripcion'];
+    $precio = isset($data['precio_unidad']) ? floatval($data['precio_unidad']) : floatval($productoActual['precio_unidad']);
+    $cantidad = isset($data['cantidad']) ? intval($data['cantidad']) : intval($productoActual['cantidad']);
+    $imagen = isset($data['imagen']) ? $data['imagen'] : $productoActual['imagen'];
+
+    $id_admin = isset($_SESSION['usuario']) ? $_SESSION['usuario']->getId() : 0;
+
+    $dao = new productoDAO();
+    $resultado = $dao->modificar($id_producto, $nombre, $descripcion, $precio, $cantidad, $imagen, $id_admin);
+
+    if ($resultado) {
+        respuestaJSON('Exito', null, 'Producto actualizado correctamente');
+    } else {
+        respuestaJSON('Fallido', null, 'Error al actualizar el producto en la base de datos', 500);
+    }
+}
+
+// Eliminar un producto
+function eliminarProducto($id) {
+    $id_producto = intval($id);
+
+    // Obtener info del producto antes de eliminarlo para validar existencia
+    $producto = productoDAO::getProductoByID($id_producto);
+    if (!$producto) {
+        respuestaJSON('Fallido', null, 'Producto no encontrado', 404);
+        return;
+    }
+
+    $id_admin = isset($_SESSION['usuario']) ? $_SESSION['usuario']->getId() : 0;
+
+    $dao = new productoDAO();
+    $resultado = $dao->eliminar($id_producto, $id_admin);
+
+    if ($resultado) {
+        respuestaJSON('Exito', null, 'Producto eliminado correctamente');
+    } else {
+        respuestaJSON('Fallido', null, 'Error al eliminar el producto de la base de datos', 500);
+    }
 }

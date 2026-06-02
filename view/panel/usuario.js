@@ -128,7 +128,7 @@ async function guardarUsuario() {
 
     //Solo pedimos la contraseña si el usuario es nuevo
     if (!esEdicion) {
-        datos.contrasena = document.getElementById('u_contrasena').value;
+        datos.password = document.getElementById('u_contrasena').value;
     }
 
     try {

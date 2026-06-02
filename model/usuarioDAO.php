@@ -119,11 +119,18 @@ class usuarioDAO {
 
     //El diario de seguridad: Registra qué hace cada administrador para tenerlo todo controlado
     private function registrarLog($id_user, $accion, $detalle, $tabla) {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
-        $stmt->execute();
-        $con->close();
+        try {
+            $con = DataBase::connect();
+            $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
+            if ($stmt) {
+                $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
+                $stmt->execute();
+                $stmt->close();
+            }
+            $con->close();
+        } catch (Exception $e) {
+            // Ignoramos errores de registro de log para evitar que la operación principal falle
+        }
     }
 
     //Registro rápido para los clientes que se apuntan por primera vez a la web
@@ -136,13 +143,19 @@ class usuarioDAO {
         
         $stmt = $con->prepare("INSERT INTO usuario (nombre, apellido, email, telefono, rol, contrasena) VALUES (?, ?, ?, ?, ?, ?)");
         
+        $nombre = $usuario->getNombre();
+        $apellido = $usuario->getApellido();
+        $email = $usuario->getEmail();
+        $telefono = $usuario->getTelefono();
+        $rol = $usuario->getRol();
+        
         $stmt->bind_param(
             'ssssss', 
-            $usuario->getNombre(), 
-            $usuario->getApellido(), 
-            $usuario->getEmail(), 
-            $usuario->getTelefono(), 
-            $usuario->getRol(), 
+            $nombre, 
+            $apellido, 
+            $email, 
+            $telefono, 
+            $rol, 
             $hash_contrasena
         );
         

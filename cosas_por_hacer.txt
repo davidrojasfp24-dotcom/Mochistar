@@ -1,6 +1,5 @@
 Proy 1
 -Prueba validación
--Lista de tareas
 -Optimización del código
 -Diaframa de clases
 -JS avanzado min 3

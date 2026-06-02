@@ -143,3 +143,4 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']->getRol() !== 'admin') 
 <script src="view/panel/log.js"></script> 
 <script src="view/panel/admin.js"></script>
 <script src="view/panel/pedido.js"></script>
+<script src="view/panel/oferta.js"></script>

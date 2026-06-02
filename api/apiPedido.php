@@ -1,77 +1,94 @@
 <?php
+// API REST para gestión de pedidos
+include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/../model/pedidoDAO.php';
 
-// while (ob_get_level() > 0) {
-//     ob_end_clean();
-// }
-// ob_start();
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-// if (session_status() === PHP_SESSION_NONE) {
-//     session_start();
-// }
+switch ($metodo) {
+    case 'GET':
+        // Solo admins pueden ver todos los pedidos
+        verificarAdmin();
+        if (isset($_GET['id'])) {
+            obtenerPedido($_GET['id']);
+        } else {
+            obtenerPedidos();
+        }
+        break;
+    case 'POST':
+        // Crear pedido: solo necesita estar logueado (no ser admin)
+        if (!isset($_SESSION['usuario'])) {
+            respuestaJSON('Fallido', null, 'Debes iniciar sesión para realizar un pedido', 401, true);
+        }
+        crearPedido();
+        break;
+    case 'PUT':
+        // Cambiar estado: solo admins
+        verificarAdmin();
+        actualizarEstadoPedido();
+        break;
+    default:
+        respuestaJSON('Fallido', null, 'Método no permitido', 405);
+}
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 0);
+// Obtener todos los pedidos
+function obtenerPedidos() {
+    $pedidos = pedidoDAO::getPedidos();
+    respuestaJSON('Exito', $pedidos ? $pedidos : []);
+}
 
-// require_once '/database/database.php';
-// require_once '/model/pedido.php';
-// require_once '/model/pedidoDAO.php';
+// Obtener un pedido específico
+function obtenerPedido($id) {
+    $pedido = pedidoDAO::getPedidoByID(intval($id));
+    if ($pedido) {
+        respuestaJSON('Exito', $pedido);
+    } else {
+        respuestaJSON('Fallido', null, 'Pedido no encontrado', 404);
+    }
+}
 
+// Crear un nuevo pedido desde el carrito
+function crearPedido() {
+    $data = json_decode(file_get_contents('php://input'), true);
 
-// function respuestaJSON($estado, $data = null, $mensaje = '', $codigo = 200)
-// {
-//     if (ob_get_length()) ob_clean();
+    if (!isset($data['lineas']) || empty($data['lineas'])) {
+        respuestaJSON('Fallido', null, 'El carrito está vacío', 400);
+        return;
+    }
 
-//     header("Content-Type: application/json; charset=UTF-8");
-//     http_response_code($codigo);
+    $id_usuario = $_SESSION['usuario']->getId();
+    $total      = floatval($data['total'] ?? 0);
+    $lineas     = $data['lineas'];
 
-//     echo json_encode([
-//         'estado' => $estado,
-//         'data' => $data,
-//         'mensaje' => $mensaje
-//     ], JSON_UNESCAPED_UNICODE);
+    $id_pedido = pedidoDAO::crearPedido($id_usuario, $total, $lineas);
 
-//     ob_end_flush();
-//     exit;
-// }
+    if ($id_pedido) {
+        respuestaJSON('Exito', ['id_pedido' => $id_pedido], 'Pedido creado correctamente', 201);
+    } else {
+        respuestaJSON('Fallido', null, 'Error al crear el pedido en la base de datos', 500);
+    }
+}
 
-// try {
+// Actualizar el estado de un pedido (admin)
+function actualizarEstadoPedido() {
+    $data = json_decode(file_get_contents("php://input"), true);
 
-//     if (!isset($_SESSION['usuario'])) {
-//         respuestaJSON('Fallido', null, 'Sesión no válida o expirada', 401);
-//     }
+    if (!isset($data['id_pedido']) || !isset($data['nuevo_estado'])) {
+        respuestaJSON('Fallido', null, 'Datos incompletos: id_pedido y nuevo_estado son requeridos', 400);
+        return;
+    }
 
-//     $metodo = $_SERVER['REQUEST_METHOD'];
-//     $dao = new pedidoDAO();
-//     $id_admin = $_SESSION['usuario']->getId();
+    $id_pedido    = intval($data['id_pedido']);
+    $nuevo_estado = $data['nuevo_estado'];
+    $id_admin     = $_SESSION['usuario']->getId();
 
-//     switch ($metodo) {
-//         case 'GET':
-//             $pedidos = pedidoDAO::getPedidos();
-//             respuestaJSON('Exito', $pedidos ? $pedidos : []);
-//             break;
+    $dao      = new pedidoDAO();
+    $resultado = $dao->modificarEstado($id_pedido, $nuevo_estado, $id_admin);
 
-//         case 'POST':
-//             $input = file_get_contents("php://input");
-//             $data = json_decode($input, true);
-
-//             if (isset($data['id_pedido'], $data['nuevo_estado'])) {
-//                 $res = $dao->modificarEstado(
-//                     $data['id_pedido'],
-//                     $data['nuevo_estado'],
-//                     $id_admin
-//                 );
-
-//                 $res ? respuestaJSON('Exito', null, 'Estado del pedido actualizado')
-//                     : respuestaJSON('Fallido', null, 'Error al actualizar en la base de datos', 500);
-//             } else {
-//                 respuestaJSON('Fallido', null, 'Datos incompletos (id_pedido o nuevo_estado)', 400);
-//             }
-//             break;
-
-//         default:
-//             respuestaJSON('Fallido', null, 'Método no permitido', 405);
-//             break;
-//     }
-// } catch (Exception $e) {
-//     respuestaJSON('Fallido', null, 'Error crítico: ' . $e->getMessage(), 500);
-// }
+    if ($resultado) {
+        respuestaJSON('Exito', null, 'Estado del pedido actualizado correctamente');
+    } else {
+        respuestaJSON('Fallido', null, 'Error al actualizar el estado en la base de datos', 500);
+    }
+}
+?>
