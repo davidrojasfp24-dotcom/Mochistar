@@ -138,6 +138,26 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']->getRol() !== 'admin') 
     </div>
 </div>
 
+<!-- Modal: Detalle de Pedido -->
+<div class="modal fade" id="modalDetallePedido" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="modalDetallePedidoTitulo">
+                    <i class="bi bi-receipt me-2 text-info"></i>Detalle del Pedido
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalDetallePedidoBody">
+                <!-- Contenido cargado dinámicamente por verDetallePedido() -->
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="view/panel/producto.js"></script>
 <script src="view/panel/usuario.js"></script>
 <script src="view/panel/log.js"></script> 

@@ -1,0 +1,660 @@
+/* ==========================================================================
+   PERFIL — MOCHISTAR
+   Paleta: negro #000, azul #019BF4, tarjetas #1F1F1F, naranja #FFA500
+   ========================================================================== */
+
+/* ---- PÁGINA COMPLETA ---- */
+.perfil-page {
+    min-height: 100vh;
+    background-color: #000;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #fff;
+    padding-bottom: 60px;
+}
+
+/* ==========================================================================
+   HERO BANNER DEL PERFIL
+   ========================================================================== */
+.perfil-hero {
+    position: relative;
+    padding: 56px 40px 48px;
+    overflow: hidden;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+/* Fondo con gradiente y patrón sutil */
+.perfil-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(1, 155, 244, 0.18) 0%, transparent 70%),
+                linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+    z-index: 0;
+}
+
+.perfil-hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(1,155,244,0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.perfil-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* ---- AVATAR ---- */
+.perfil-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.perfil-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #019BF4 0%, #005fa3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.perfil-avatar-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, #019BF4, #00d4ff, #019BF4) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    animation: avatar-ring-spin 4s linear infinite;
+}
+
+@keyframes avatar-ring-spin {
+    to { transform: rotate(360deg); }
+}
+
+.perfil-avatar-initial {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* Badge de rol debajo del avatar */
+.perfil-badge-rol {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1F1F1F;
+    border: 1px solid #333;
+    color: #019BF4;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ---- INFO PRINCIPAL ---- */
+.perfil-hero-info {
+    flex: 1;
+    min-width: 220px;
+}
+
+.perfil-nombre {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin: 0 0 6px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.perfil-email-hero {
+    color: #888;
+    font-size: 0.875rem;
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.perfil-email-hero i {
+    color: #019BF4;
+}
+
+/* Estadísticas del hero */
+.perfil-stats {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background-color: #111;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 14px 24px;
+    display: inline-flex;
+}
+
+.perfil-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0 20px;
+}
+
+.perfil-stat-num {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #019BF4;
+}
+
+.perfil-stat-label {
+    font-size: 0.7rem;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.perfil-stat-divider {
+    width: 1px;
+    height: 32px;
+    background-color: #2a2a2a;
+    flex-shrink: 0;
+}
+
+/* ---- ACCIONES HERO ---- */
+.perfil-hero-actions {
+    margin-left: auto;
+}
+
+.btn-perfil-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.btn-perfil-logout:hover {
+    background-color: rgba(255, 60, 60, 0.1);
+    border-color: rgba(255, 60, 60, 0.5);
+    color: #ff6b6b;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   CUERPO: 2 COLUMNAS
+   ========================================================================== */
+.perfil-body {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+/* ==========================================================================
+   TARJETAS GENÉRICAS
+   ========================================================================== */
+.perfil-card {
+    background-color: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 20px;
+    padding: 24px;
+    transition: border-color 0.25s;
+}
+
+.perfil-card:hover {
+    border-color: rgba(1, 155, 244, 0.25);
+}
+
+.perfil-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1e1e1e;
+}
+
+.perfil-card-header i {
+    color: #019BF4;
+    font-size: 1.1rem;
+}
+
+.perfil-card-header h2 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #ccc;
+    flex: 1;
+}
+
+/* ==========================================================================
+   SIDEBAR — DATOS PERSONALES
+   ========================================================================== */
+.perfil-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Lista de datos */
+.perfil-datos-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.perfil-dato-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+}
+
+.perfil-dato-item:hover {
+    background-color: rgba(255,255,255,0.03);
+}
+
+.perfil-dato-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background-color: rgba(1, 155, 244, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #019BF4;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.perfil-dato-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.perfil-dato-label {
+    font-size: 0.68rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+.perfil-dato-val {
+    font-size: 0.9rem;
+    color: #ddd;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Badge de rol */
+.perfil-rol-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem !important;
+    font-weight: 700;
+}
+
+.perfil-rol-admin {
+    background-color: rgba(255, 165, 0, 0.12);
+    color: #FFA500;
+    border: 1px solid rgba(255, 165, 0, 0.25);
+}
+
+.perfil-rol-cliente {
+    background-color: rgba(1, 155, 244, 0.12);
+    color: #019BF4;
+    border: 1px solid rgba(1, 155, 244, 0.25);
+}
+
+/* ---- TARJETA DE AYUDA ---- */
+.perfil-card-help {
+    background: linear-gradient(135deg, #0d1a24 0%, #111 100%);
+    border-color: rgba(1, 155, 244, 0.2);
+}
+
+.perfil-help-text {
+    font-size: 0.85rem;
+    color: #888;
+    line-height: 1.6;
+    margin: 0 0 16px;
+}
+
+.perfil-help-text strong {
+    color: #ccc;
+}
+
+.btn-perfil-help {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(1, 155, 244, 0.1);
+    border: 1px solid rgba(1, 155, 244, 0.35);
+    color: #019BF4;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.25s;
+}
+
+.btn-perfil-help:hover {
+    background-color: #019BF4;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   SECCIÓN PRINCIPAL — PEDIDOS
+   ========================================================================== */
+.perfil-card-pedidos {
+    min-height: 300px;
+}
+
+/* Contador en el header */
+.perfil-pedidos-count {
+    background-color: #019BF4;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+/* ---- ESTADO VACÍO ---- */
+.perfil-empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.perfil-empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.perfil-empty-state h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ccc;
+    margin: 0;
+}
+
+.perfil-empty-state p {
+    font-size: 0.875rem;
+    color: #555;
+    margin: 0;
+}
+
+.btn-perfil-cta {
+    display: inline-block;
+    margin-top: 8px;
+    background-color: #019BF4;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 11px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: all 0.25s;
+}
+
+.btn-perfil-cta:hover {
+    background-color: #0081cc;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* ---- LISTA DE PEDIDOS ---- */
+.perfil-pedidos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.perfil-pedido-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    background-color: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    transition: border-color 0.2s, transform 0.2s, background-color 0.2s;
+    animation: pedido-slide-in 0.4s ease both;
+}
+
+@keyframes pedido-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.perfil-pedido-item:hover {
+    border-color: rgba(1, 155, 244, 0.3);
+    background-color: #111;
+    transform: translateX(4px);
+}
+
+/* Columna número */
+.pedido-num-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 52px;
+}
+
+.pedido-icon-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: rgba(1, 155, 244, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #019BF4;
+    font-size: 0.95rem;
+}
+
+.pedido-num {
+    font-size: 0.65rem;
+    color: #555;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+/* Columna info */
+.pedido-info-col {
+    flex: 1;
+}
+
+.pedido-fecha {
+    font-size: 0.82rem;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pedido-fecha i {
+    color: #444;
+}
+
+/* Columna precio */
+.pedido-precio-col {
+    min-width: 80px;
+    text-align: right;
+}
+
+.pedido-precio {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* Columna estado */
+.pedido-estado-col {
+    min-width: 110px;
+    text-align: right;
+}
+
+.pedido-estado-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.estado-pendiente {
+    background-color: rgba(255, 165, 0, 0.12);
+    color: #FFA500;
+    border: 1px solid rgba(255, 165, 0, 0.25);
+}
+
+.estado-enviado {
+    background-color: rgba(1, 155, 244, 0.12);
+    color: #019BF4;
+    border: 1px solid rgba(1, 155, 244, 0.25);
+}
+
+.estado-entregado {
+    background-color: rgba(0, 200, 100, 0.12);
+    color: #00c864;
+    border: 1px solid rgba(0, 200, 100, 0.25);
+}
+
+.estado-cancelado {
+    background-color: rgba(255, 60, 60, 0.1);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 60, 60, 0.2);
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .perfil-body {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .perfil-hero {
+        padding: 40px 20px 36px;
+    }
+
+    .perfil-hero-content {
+        gap: 24px;
+    }
+
+    .perfil-hero-actions {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .perfil-body {
+        padding: 0 20px;
+        margin-top: 28px;
+    }
+
+    .perfil-stats {
+        padding: 12px 16px;
+    }
+
+    .perfil-stat-item {
+        padding: 0 12px;
+    }
+
+    .perfil-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-pedido-item {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pedido-estado-col {
+        text-align: left;
+    }
+
+    .perfil-nombre {
+        font-size: 1.6rem;
+    }
+}

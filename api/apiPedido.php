@@ -1,6 +1,7 @@
 <?php
 // API REST para gestión de pedidos
 include_once __DIR__ . '/config.php';
+include_once __DIR__ . '/../model/usuario.php';   // necesario para deserializar $_SESSION['usuario']
 include_once __DIR__ . '/../model/pedidoDAO.php';
 
 $metodo = $_SERVER['REQUEST_METHOD'];
@@ -37,10 +38,12 @@ function obtenerPedidos() {
     respuestaJSON('Exito', $pedidos ? $pedidos : []);
 }
 
-// Obtener un pedido específico
+// Obtener un pedido específico con sus líneas de detalle
 function obtenerPedido($id) {
     $pedido = pedidoDAO::getPedidoByID(intval($id));
     if ($pedido) {
+        // Añadimos las líneas (productos) del pedido al objeto de respuesta
+        $pedido['lineas'] = pedidoDAO::getLineasByPedido(intval($id));
         respuestaJSON('Exito', $pedido);
     } else {
         respuestaJSON('Fallido', null, 'Pedido no encontrado', 404);

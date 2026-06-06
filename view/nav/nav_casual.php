@@ -3,7 +3,7 @@
 <header>
     <nav class="nav-principal">
         <div class="nav-logo">
-            <img src="view/nav/img/logo.png" alt="Logo M+">
+            <a href="index.php?controller=home&action=ver_home"><img src="view/nav/img/logo.png" alt="Logo M+"></a>
         </div>
 
         <div class="nav-menu">

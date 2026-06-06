@@ -1,0 +1,238 @@
+/* ==========================================================================
+   FOOTER — MOCHISTAR
+   Diseño acorde: fondo negro, azul #019BF4, tarjetas #1F1F1F
+   ========================================================================== */
+
+/* ---- WRAPPER GENERAL ---- */
+.footer-wrapper {
+    background-color: #000;
+    border-top: 1px solid #1a1a1a;
+    padding: 0;
+    margin-top: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #fff;
+}
+
+/* ---- FRANJA DECORATIVA SUPERIOR ---- */
+.footer-top-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #019BF4 0%, #00d4ff 50%, #019BF4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 0;
+    background-color: #0d0d0d;
+    background-image: none;
+    border-top: 3px solid #019BF4;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-top-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 300%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #019BF4, #00d4ff, #019BF4, transparent);
+    animation: footer-shimmer 3s linear infinite;
+}
+
+@keyframes footer-shimmer {
+    0%   { left: -100%; }
+    100% { left: 0%; }
+}
+
+.footer-bar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #019BF4;
+    display: inline-block;
+    opacity: 0.6;
+}
+
+/* ---- ÁREA INTERIOR: 4 COLUMNAS ---- */
+.footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 48px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 60px 40px 40px;
+}
+
+/* ---- COLUMNA GENÉRICA ---- */
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ---- COL 1: MARCA ---- */
+.footer-logo {
+    height: 38px;
+    width: auto;
+    margin-bottom: 4px;
+    filter: brightness(1.1);
+}
+
+.footer-tagline {
+    color: #888;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Social icons */
+.footer-social {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.footer-social-link {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #1F1F1F;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.25s, color 0.25s, transform 0.25s, border-color 0.25s;
+}
+
+.footer-social-link:hover {
+    background-color: #019BF4;
+    color: #fff;
+    border-color: #019BF4;
+    transform: translateY(-3px);
+}
+
+/* ---- HEADINGS DE COLUMNA ---- */
+.footer-heading {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #019BF4;
+    margin: 0 0 8px 0;
+}
+
+/* ---- LISTAS DE NAVEGACIÓN ---- */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links li a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 400;
+    transition: color 0.2s, padding-left 0.2s;
+    display: inline-block;
+}
+
+.footer-links li a:hover {
+    color: #019BF4;
+    padding-left: 4px;
+}
+
+/* ---- LISTA DE CONTACTO ---- */
+.footer-contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.footer-contact-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #aaa;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.footer-contact-icon {
+    color: #019BF4;
+    font-size: 0.9rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+/* ---- LÍNEA DIVISORIA ---- */
+.footer-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #222, #019BF4 50%, #222, transparent);
+    margin: 0;
+}
+
+/* ---- PIE INFERIOR ---- */
+.footer-bottom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-copy,
+.footer-made {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.footer-brand-name {
+    color: #019BF4;
+    font-weight: 700;
+}
+
+.footer-heart {
+    color: #ff4d6d;
+    font-size: 0.75rem;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 992px) {
+    .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 36px;
+        padding: 40px 24px 32px;
+    }
+
+    .footer-col.footer-brand {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-inner {
+        grid-template-columns: 1fr;
+        padding: 32px 20px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        padding: 16px 20px;
+    }
+}

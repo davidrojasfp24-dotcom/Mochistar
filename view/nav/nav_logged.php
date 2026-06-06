@@ -17,7 +17,7 @@
                 <img src="view/nav/img/carrito.png" alt="carrito de compras">
             </a>
 
-            <a href="index.php?controller=usuario&action=ver_login">
+            <a href="index.php?controller=usuario&action=ver_perfil">
                 <img src="view/nav/img/usuario.png" alt="Icono de usuario">
             </a>
         </div>

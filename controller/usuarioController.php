@@ -87,6 +87,18 @@ class usuarioController {
         include_once 'view/main.php';
     }
 
+    //Carga la página del perfil del usuario logueado
+    public function ver_perfil() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        // Si no hay sesión, redirigimos al login
+        if (!isset($_SESSION['usuario'])) {
+            header('Location: index.php?controller=usuario&action=ver_login');
+            exit();
+        }
+        $view = 'view/perfil/perfil.php';
+        include_once 'view/main.php';
+    }
+
     //Función para cerrar la sesión y salir de la cuenta
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) session_start();

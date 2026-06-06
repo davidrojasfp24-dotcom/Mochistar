@@ -13,6 +13,21 @@ class usuario {
         
     }
 
+    // fetch_object() asigna propiedades públicas por nombre de columna.
+    // Como nuestras propiedades son privadas, usamos __set para capturarlas
+    // y mapear los nombres de columna de la BD a nuestras propiedades internas.
+    public function __set($name, $value) {
+        switch ($name) {
+            case 'id_usuario':  $this->id         = $value; break;
+            case 'contrasena':  $this->contrasena  = $value; break;
+            case 'nombre':      $this->nombre      = $value; break;
+            case 'apellido':    $this->apellido    = $value; break;
+            case 'email':       $this->email       = $value; break;
+            case 'telefono':    $this->telefono    = $value; break;
+            case 'rol':         $this->rol         = $value; break;
+        }
+    }
+
     // Getters
     public function getId() {
         return $this->id;

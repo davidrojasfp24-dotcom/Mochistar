@@ -1,17 +1,23 @@
 <?php
 //Importamos la conexión y el modelo de los pedidos
-require_once 'database/database.php';
-require_once 'model/pedido.php';
+require_once __DIR__ . '/../database/database.php';
+require_once __DIR__ . '/pedido.php';
 
 class pedidoDAO {
 
-    //Función para sacar todos los pedidos de la base de datos
+    //Función para sacar todos los pedidos de la base de datos (con nombre del usuario)
     public static function getPedidos() {
         //Conectamos con la base de datos
         $con = DataBase::connect();
         
-        //Ordenamos por ID de forma descendente para que los pedidos más recientes salgan arriba
-        $stmt = $con->prepare("SELECT * FROM pedido ORDER BY id_pedido DESC");
+        // JOIN con usuario para mostrar el nombre del comprador en el panel admin
+        $stmt = $con->prepare("
+            SELECT p.id_pedido, p.estado, p.fecha, p.precio, p.id_usuario,
+                   CONCAT(u.nombre, ' ', u.apellido) AS nombre_usuario, u.email
+            FROM pedido p
+            LEFT JOIN usuario u ON p.id_usuario = u.id_usuario
+            ORDER BY p.id_pedido DESC
+        ");
         $stmt->execute();
         $results = $stmt->get_result();
 
@@ -23,6 +29,29 @@ class pedidoDAO {
 
         $con->close();
         return $listaPedidos;
+    }
+
+    // Obtener las líneas (productos) de un pedido concreto
+    public static function getLineasByPedido($id_pedido) {
+        $con = DataBase::connect();
+        $stmt = $con->prepare("
+            SELECT lp.id_linea, lp.cantidad, lp.precio_unidad, lp.porcentaje_descuento,
+                   pr.nombre AS nombre_producto, pr.imagen
+            FROM linea_pedido lp
+            LEFT JOIN producto pr ON lp.id_producto = pr.id_producto
+            WHERE lp.id_pedido = ?
+        ");
+        $stmt->bind_param('i', $id_pedido);
+        $stmt->execute();
+        $results = $stmt->get_result();
+
+        $lineas = [];
+        while ($linea = $results->fetch_assoc()) {
+            $lineas[] = $linea;
+        }
+
+        $con->close();
+        return $lineas;
     }
 
     //Buscamos un pedido concreto usando su ID único
@@ -76,16 +105,25 @@ class pedidoDAO {
             $id_pedido = $stmt->insert_id;
             $stmt->close();
 
-            // 2. Insertar cada línea de pedido
+            // 2. Insertar cada línea de pedido (sin porcentaje_descuento: DEFAULT NULL en BD)
             $stmtLinea = $con->prepare(
-                "INSERT INTO linea_pedido (precio_unidad, cantidad, porcentaje_descuento, id_pedido, id_producto) VALUES (?, ?, ?, ?, ?)"
+                "INSERT INTO linea_pedido (precio_unidad, cantidad, id_pedido, id_producto) VALUES (?, ?, ?, ?)"
             );
+            if (!$stmtLinea) {
+                throw new \RuntimeException('prepare linea_pedido falló: ' . $con->error);
+            }
+            // bind_param con referencias: se asignan antes del bucle, se actualizan dentro
+            $precio  = 0.0;
+            $cantidad = 0;
+            $id_prod  = 0;
+            $stmtLinea->bind_param('diii', $precio, $cantidad, $id_pedido, $id_prod);
             foreach ($lineas as $linea) {
-                $precio    = floatval($linea['precio']);
-                $cantidad  = intval($linea['cantidad']);
-                $descuento = null; // sin descuento por defecto
-                $stmtLinea->bind_param('diidi', $precio, $cantidad, $descuento, $id_pedido, $linea['id']);
-                $stmtLinea->execute();
+                $precio   = floatval($linea['precio']);
+                $cantidad = intval($linea['cantidad']);
+                $id_prod  = intval($linea['id']);
+                if (!$stmtLinea->execute()) {
+                    throw new \RuntimeException('execute linea_pedido falló: ' . $stmtLinea->error);
+                }
             }
             $stmtLinea->close();
 
@@ -93,9 +131,11 @@ class pedidoDAO {
             $con->close();
             return $id_pedido;
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            // Capturamos tanto Exception como Error (TypeError, etc.)
             $con->rollback();
             $con->close();
+            error_log('[pedidoDAO::crearPedido] ' . $e->getMessage());
             return false;
         }
     }
