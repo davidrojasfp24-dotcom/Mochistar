@@ -33,4 +33,4 @@
     </div>
 </div>
 
-<script src="view/carta/carta.js"></script>
+<script src="view/carta/carta.js?v=<?php echo time(); ?>"></script>

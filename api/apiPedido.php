@@ -3,6 +3,7 @@
 include_once __DIR__ . '/config.php';
 include_once __DIR__ . '/../model/usuario.php';   // necesario para deserializar $_SESSION['usuario']
 include_once __DIR__ . '/../model/pedidoDAO.php';
+include_once __DIR__ . '/../model/productoDAO.php';
 
 $metodo = $_SERVER['REQUEST_METHOD'];
 
@@ -62,6 +63,31 @@ function crearPedido() {
     $id_usuario = $_SESSION['usuario']->getId();
     $total      = floatval($data['total'] ?? 0);
     $lineas     = $data['lineas'];
+
+    if ($total <= 0) {
+        respuestaJSON('Fallido', null, 'El total del pedido debe ser mayor que 0', 400);
+        return;
+    }
+
+    foreach ($lineas as $linea) {
+        if (
+            !isset($linea['id']) ||
+            !isset($linea['precio']) ||
+            !isset($linea['cantidad']) ||
+            intval($linea['id']) <= 0 ||
+            floatval($linea['precio']) <= 0 ||
+            intval($linea['cantidad']) <= 0
+        ) {
+            respuestaJSON('Fallido', null, 'Las líneas del pedido contienen datos inválidos', 400);
+            return;
+        }
+
+        $id_producto = intval($linea['id']);
+        if (!productoDAO::getProductoByID($id_producto)) {
+            respuestaJSON('Fallido', null, "El producto con ID $id_producto ya no existe. Vacía el carrito y vuelve a añadir los productos.", 400);
+            return;
+        }
+    }
 
     $id_pedido = pedidoDAO::crearPedido($id_usuario, $total, $lineas);
 

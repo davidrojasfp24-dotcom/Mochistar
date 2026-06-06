@@ -1,7 +1,44 @@
 //Cuando la página termina de cargar, arrancamos el sistema para mostrar los datos guardados
 document.addEventListener('DOMContentLoaded', () => {
+    limpiarCarritoInvalido();
     actualizarInterfaz();
 });
+
+function obtenerCarrito() {
+    try {
+        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        return Array.isArray(carrito) ? carrito : [];
+    } catch (e) {
+        localStorage.removeItem('carrito');
+        return [];
+    }
+}
+
+function guardarCarrito(carrito) {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
+function limpiarCarritoInvalido() {
+    const carrito = obtenerCarrito();
+    const carritoValido = carrito.filter(item =>
+        Number.isInteger(parseInt(item.id)) &&
+        parseInt(item.id) > 0 &&
+        !Number.isNaN(parseFloat(item.precio)) &&
+        parseFloat(item.precio) > 0 &&
+        Number.isInteger(parseInt(item.cantidad)) &&
+        parseInt(item.cantidad) > 0
+    ).map(item => ({
+        ...item,
+        id: parseInt(item.id),
+        precio: parseFloat(item.precio),
+        cantidad: parseInt(item.cantidad),
+        imagen: item.imagen || item.image || 'default.png'
+    }));
+
+    if (carritoValido.length !== carrito.length) {
+        guardarCarrito(carritoValido);
+    }
+}
 
 //Esta función es como el director de orquesta: decide qué partes de la web hay que pintar de nuevo
 function actualizarInterfaz() {
@@ -18,7 +55,7 @@ function actualizarInterfaz() {
 
 function actualizarBotonesCatalogo() {
     //Sacamos los productos guardados en la memoria del navegador (LocalStorage)
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const carrito = obtenerCarrito();
     
     //Buscamos todos los huecos que el PHP dejó preparados para los botones
     const contenedores = document.querySelectorAll('[id^="contenedor-boton-"]');
@@ -56,14 +93,14 @@ function agregarAlCarrito(id) {
         id: id,
         nombre: contenedor.getAttribute('data-nombre'),
         precio: parseFloat(contenedor.getAttribute('data-precio')),
-        image: contenedor.getAttribute('data-image'),
+        imagen: contenedor.getAttribute('data-image'),
         cantidad: 1
     };
 
     //Cogemos lo que ya había en el carrito, añadimos el nuevo mochi y lo volvemos a guardar
-    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    let carrito = obtenerCarrito();
     carrito.push(nuevoProducto);
-    localStorage.setItem('carrito', JSON.stringify(carrito));
+    guardarCarrito(carrito);
     
     //Refrescamos la interfaz para que el botón cambie al instante
     actualizarInterfaz();
@@ -71,7 +108,7 @@ function agregarAlCarrito(id) {
 
 //Esta función sirve para todo: subir cantidad, bajarla o borrar el producto si llega a cero
 function cambiarCantidadGlobal(id, cambio) {
-    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    let carrito = obtenerCarrito();
     const index = carrito.findIndex(p => p.id === id);
 
     if (index !== -1) {
@@ -84,7 +121,7 @@ function cambiarCantidadGlobal(id, cambio) {
         }
         
         //Guardamos los cambios en la memoria del navegador
-        localStorage.setItem('carrito', JSON.stringify(carrito));
+        guardarCarrito(carrito);
         actualizarInterfaz();
     }
 }
@@ -94,7 +131,7 @@ function cambiarCantidadGlobal(id, cambio) {
 function renderizarCarrito() {
     const lista = document.getElementById('lista-productos');
     const resumen = document.getElementById('resumen-totales');
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const carrito = obtenerCarrito();
 
     //Si el carrito está vacío, mostramos un mensaje amigable
     if (carrito.length === 0) {
@@ -115,7 +152,7 @@ function renderizarCarrito() {
             <div class="cart-item d-flex align-items-center justify-content-between mb-4 text-white p-3" 
                  style="background: rgba(255,255,255,0.05); border-radius: 15px;">
                 <div class="d-flex align-items-center">
-                    <img src="view/home/img/${item.image}" alt="${item.nombre}" 
+                    <img src="view/home/img/${item.imagen}" alt="${item.nombre}" 
                          style="width:70px; height:70px; border-radius:12px; margin-right:20px; object-fit:cover;">
                     <div>
                         <h5 class="mb-0">${item.nombre}</h5>
@@ -156,7 +193,8 @@ function renderizarCarrito() {
 // --- FINALIZAR LA COMPRA ---
 
 async function finalizarCompra() {
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    limpiarCarritoInvalido();
+    const carrito = obtenerCarrito();
 
     if (carrito.length === 0) {
         alert("Añade algún producto antes de finalizar.");
@@ -173,9 +211,9 @@ async function finalizarCompra() {
     const payload = {
         total: parseFloat(total.toFixed(2)),
         lineas: carrito.map(item => ({
-            id:       item.id,
-            precio:   item.precio,
-            cantidad: item.cantidad
+            id:       parseInt(item.id),
+            precio:   parseFloat(item.precio),
+            cantidad: parseInt(item.cantidad)
         }))
     };
 
@@ -197,10 +235,14 @@ async function finalizarCompra() {
             alert("Debes iniciar sesión para finalizar la compra.");
             window.location.href = "index.php?controller=usuario&action=ver_login";
         } else {
+            if (res.mensaje && res.mensaje.includes("ya no existe")) {
+                localStorage.removeItem('carrito');
+                actualizarInterfaz();
+            }
             alert("Error al procesar el pedido: " + (res.mensaje || "Error desconocido."));
         }
     } catch (e) {
         console.error("Error al finalizar compra:", e);
         alert("Error de conexión. Por favor inténtalo de nuevo.");
     }
-}
+}

@@ -19,10 +19,10 @@
                     </div>
                 
                 <button class="btn-finalizar-compra mt-4" onclick="finalizarCompra()">
-                    Finalizar compra
+                    Comprar
                 </button>
             </div>
         </div>
     </div>
 </div>
-<script src="view/carrito/carrito.js"></script>
+<script src="view/carrito/carrito.js?v=<?php echo time(); ?>"></script>
