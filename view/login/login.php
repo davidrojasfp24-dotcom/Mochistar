@@ -8,10 +8,15 @@
 
             <form id="loginForm" action="index.php?controller=usuario&action=iniciarSesion" method="post">
                 <label for="email">Email:</label>
-                <input type="text" id="email" name="email" required> 
+                <input type="text" id="email" name="email" value="<?php echo isset($_COOKIE['recordar_email']) ? htmlspecialchars($_COOKIE['recordar_email']) : ''; ?>" required> 
                 
                 <label for="contrasena">Contraseña:</label>
                 <input type="password" id="contrasena" name="contrasena" required>
+                
+                <div class="remember-container">
+                    <input type="checkbox" id="recordar" name="recordar" <?php echo isset($_COOKIE['recordar_email']) ? 'checked' : ''; ?>>
+                    <label for="recordar" class="remember-label">Recordar mi email</label>
+                </div>
                 
                 <button type="submit">Iniciar Sesión</button>
             </form>

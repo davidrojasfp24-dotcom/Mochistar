@@ -33,6 +33,16 @@ class usuarioController {
             if ($usuario) {
                 //Si todo está bien, guardamos al usuario en la sesión para que la web lo reconozca
                 $_SESSION['usuario'] = $usuario;
+
+                // Opción C: Recordar correo en Cookies
+                if (isset($_POST['recordar'])) {
+                    // Guardamos la cookie del email por 30 días
+                    setcookie('recordar_email', $email, time() + 3600 * 24 * 30, '/');
+                } else {
+                    // Borramos la cookie si el usuario desmarca la casilla
+                    setcookie('recordar_email', '', time() - 3600, '/');
+                }
+
                 //Lo mandamos directos a la Home
                 header('Location: index.php?controller=home&action=ver_home');
             } else {
@@ -76,6 +86,14 @@ class usuarioController {
 
     //Carga la pantalla donde el usuario pone sus datos para entrar
     public function ver_login() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        
+        $error = null;
+        if (isset($_SESSION['error_login'])) {
+            $error = $_SESSION['error_login'];
+            unset($_SESSION['error_login']);
+        }
+        
         $view = 'view/login/login.php';
         //Usamos el main.php para que se vea el menú y el pie de página
         include_once 'view/main.php';

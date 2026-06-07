@@ -2,12 +2,10 @@ Proy 1
 -Prueba validación
 -Optimización del código
 -Diaframa de clases
--JS avanzado min 3
--Sesiones y cookies
+-JS avanzado minimo 3
 -JS básico
 -Eventos JS -onclick no -listeners si
 -DOM
--AJAX
 -PHP integración HTML
 -Clases JS
 -Falta titulo de pagina (Todas)
@@ -15,8 +13,6 @@ Proy 1
 -Paguina detalle producto
 -Tipografia
 -Botones más cuadrados
--Migas de pan
 -Menu responsive
 
 - Hacer que los productos tengan ofertas. A traves del id de la oferta. Luego tengo que coger el id de la oferta pillar de que cantidad es la oferta y una vez hecho hacer: producto - (producto x 100 / oferta)
-- Perfil con historial de pedidos
