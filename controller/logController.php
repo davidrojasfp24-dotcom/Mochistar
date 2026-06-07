@@ -27,16 +27,13 @@ class logController {
             $listaLogs = logDAO::getLogs();
 
             // 4. Preparar los datos para JSON
-            // Convertimos los objetos en un array simple para que JavaScript lo entienda perfectamente
             $dataResponse = [];
             foreach ($listaLogs as $l) {
                 $dataResponse[] = [
-                    'id_log'         => $l->getIdLog(),
-                    'nombre_admin'   => $l->getNombreAdmin() ?? 'Sistema', // Si el admin fue borrado, pone 'Sistema'
-                    'accion'         => $l->getAccion(),
-                    'detalle'        => $l->getDetalle(),
-                    'tabla_afectada' => $l->getTablaAfectada(),
-                    'fecha'          => $l->getFecha()
+                    'log_id'     => $l['log_id'],
+                    'usuario_id' => $l['usuario_id'],
+                    'mensaje'    => $l['mensaje'],
+                    'fecha'      => date("d/m/Y H:i", strtotime($l['fecha']))
                 ];
             }
 
@@ -52,3 +49,4 @@ class logController {
         }
     }
 }
+?>

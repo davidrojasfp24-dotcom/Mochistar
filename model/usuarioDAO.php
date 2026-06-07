@@ -121,9 +121,10 @@ class usuarioDAO {
     private function registrarLog($id_user, $accion, $detalle, $tabla) {
         try {
             $con = DataBase::connect();
-            $stmt = $con->prepare("INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada) VALUES (?, ?, ?, ?)");
+            $mensaje = "[$accion] $detalle en tabla $tabla";
+            $stmt = $con->prepare("INSERT INTO logs (usuario_id, mensaje) VALUES (?, ?)");
             if ($stmt) {
-                $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
+                $stmt->bind_param("is", $id_user, $mensaje);
                 $stmt->execute();
                 $stmt->close();
             }

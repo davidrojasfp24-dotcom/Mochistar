@@ -24,12 +24,10 @@ function obtenerLogs() {
 
         foreach ($logs as $l) {
             $listaFinal[] = [
-                'id_log'         => $l['id_log'],
-                'id_usuario'     => $l['id_usuario'],
-                'accion'         => $l['accion'],
-                'detalle'        => $l['detalle'],
-                'tabla_afectada' => $l['tabla_afectada'],
-                'fecha'          => date("d/m/Y H:i", strtotime($l['dia/hora']))
+                'log_id'     => $l['log_id'],
+                'usuario_id' => $l['usuario_id'],
+                'mensaje'    => $l['mensaje'],
+                'fecha'      => date("d/m/Y H:i", strtotime($l['fecha']))
             ];
         }
 
@@ -38,3 +36,4 @@ function obtenerLogs() {
         respuestaJSON('Fallido', null, 'Error al obtener los logs: ' . $e->getMessage(), 500);
     }
 }
+?>

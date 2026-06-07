@@ -123,15 +123,16 @@ class productoDAO {
         //Si por algún motivo no sabemos quién es el usuario, no guardamos nada para evitar fallos
         if (empty($id_user)) return; 
 
-        //Insertamos la acción y usamos NOW() para que la base de datos ponga la hora exacta automáticamente
-        $sql = "INSERT INTO log_admin (id_usuario, accion, detalle, tabla_afectada, `dia/hora`) 
-                VALUES (?, ?, ?, ?, NOW())";
+        // Componemos el mensaje de log a partir de los datos recibidos
+        $mensaje = "[$accion] $detalle en tabla $tabla";
+
+        //Insertamos la acción y dejamos que la base de datos ponga la fecha automáticamente
+        $sql = "INSERT INTO logs (usuario_id, mensaje) VALUES (?, ?)";
                 
         $stmt = $con->prepare($sql);
         
         if ($stmt) {
-            //Guardamos: ID del admin, qué ha hecho (Insert/Update/Delete), el mensaje y la tabla
-            $stmt->bind_param("isss", $id_user, $accion, $detalle, $tabla);
+            $stmt->bind_param("is", $id_user, $mensaje);
             $stmt->execute();
             $stmt->close();
         }
