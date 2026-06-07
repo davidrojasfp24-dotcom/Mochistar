@@ -1,182 +1,231 @@
-// Variable para controlar el pop-up (modal) de los productos
-let instanceModalProducto = null;
+/**
+ * Gestor de la sección de Productos (hereda de BaseManager)
+ */
+class ProductoManager extends BaseManager {
+    constructor(contenedorId) {
+        super(contenedorId);
+        this.modal = null;
+        this.form = null;
+        this.setupEventHandlers();
+    }
 
-//Función para construir y mostrar la tabla de productos en el panel
-async function cargarSeccionProductos() {
-    const contenedor = document.getElementById('contenedor-principal');
+    /**
+     * Asocia manejadores de eventos usando delegación en el contenedor principal
+     */
+    setupEventHandlers() {
+        // Guardar cambios desde el botón del modal (onclick NO, listeners SI)
+        const btnGuardar = document.getElementById('btn-guardar-producto');
+        if (btnGuardar) {
+            btnGuardar.addEventListener('click', () => this.guardar());
+        }
 
-    //Dibujamos la estructura de la tabla con sus encabezados
-    contenedor.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-white">Gestión de Productos</h2>
-            <button class="btn btn-primary" onclick="abrirModalProducto()">
-                <i class="bi bi-plus-lg me-2"></i> Nuevo Producto
-            </button>
-        </div>
-        <div class="table-responsive bg-dark p-3 rounded shadow">
-            <table class="table table-dark table-hover align-middle">
-                <thead>
+        // Delegación de eventos en el contenedor principal (JS Avanzado)
+        this.contenedor.addEventListener('click', (event) => {
+            if (adminController.currentSection !== 'producto') return;
+
+            const btnNuevo = event.target.closest('[data-action="nuevo-producto"]');
+            if (btnNuevo) {
+                this.abrirModal();
+                return;
+            }
+
+            const btnEditar = event.target.closest('[data-action="editar-producto"]');
+            if (btnEditar) {
+                const id = btnEditar.getAttribute('data-id');
+                this.editar(id);
+                return;
+            }
+
+            const btnEliminar = event.target.closest('[data-action="eliminar-producto"]');
+            if (btnEliminar) {
+                const id = btnEliminar.getAttribute('data-id');
+                this.confirmarEliminar(id);
+                return;
+            }
+        });
+    }
+
+    /**
+     * Carga todos los productos desde la base de datos (Async/Await)
+     */
+    async cargar() {
+        this.mostrarCargando("Cargando catálogo de productos...");
+
+        this.contenedor.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-white">Gestión de Productos</h2>
+                <button class="btn btn-primary" data-action="nuevo-producto">
+                    <i class="bi bi-plus-lg me-2"></i> Nuevo Producto
+                </button>
+            </div>
+            <div class="table-responsive bg-dark p-3 rounded shadow">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>NOMBRE</th>
+                            <th>PRECIO</th>
+                            <th>STOCK</th>
+                            <th class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-productos-body">
+                        <tr><td colspan="5" class="text-center p-4">Cargando productos...</td></tr>
+                    </tbody>
+                </table>
+            </div>`;
+
+        try {
+            const response = await fetch('index.php?controller=api&action=productos');
+            const res = await response.json();
+            const tbody = document.getElementById('tabla-productos-body');
+
+            if (res.estado === 'Exito' && res.data.length > 0) {
+                // Desestructuración de propiedades dentro del map (JS Avanzado)
+                tbody.innerHTML = res.data.map(({ id_producto, nombre, precio_unidad, cantidad }) => `
                     <tr>
-                        <th style="width: 80px;">ID</th>
-                        <th>NOMBRE</th>
-                        <th>PRECIO</th>
-                        <th>STOCK</th>
-                        <th class="text-center">ACCIONES</th>
+                        <td class="text-muted">#${id_producto}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold">${nombre}</span>
+                            </div>
+                        </td>
+                        <td><span class="text-info">${precio_unidad}€</span></td>
+                        <td>
+                            <span class="badge ${cantidad < 10 ? 'bg-warning text-dark' : 'bg-secondary'}">
+                                ${cantidad} uds
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-info me-2" data-action="editar-producto" data-id="${id_producto}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" data-action="eliminar-producto" data-id="${id_producto}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody id="tabla-productos-body">
-                    <tr><td colspan="5" class="text-center p-4">Cargando productos...</td></tr>
-                </tbody>
-            </table>
-        </div>`;
-
-    try {
-        //Llamamos a la API para obtener la lista de todos los mochis
-        const response = await fetch('index.php?controller=api&action=productos');
-        const res = await response.json();
-
-        const tbody = document.getElementById('tabla-productos-body');
-
-        //Si la respuesta es positiva y hay productos, los pintamos fila por fila
-        if (res.estado === 'Exito' && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(p => `
-                <tr>
-                    <td class="text-muted">#${p.id_producto}</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <span class="fw-bold">${p.nombre}</span>
-                        </div>
-                    </td>
-                    <td><span class="text-info">${p.precio_unidad}€</span></td>
-                    <td>
-                        <span class="badge ${p.cantidad < 10 ? 'bg-warning text-dark' : 'bg-secondary'}">
-                            ${p.cantidad} uds
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-outline-info me-2" onclick="editarProducto(${p.id_producto})">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${p.id_producto})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted">No hay productos en la base de datos.</td></tr>';
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted">No hay productos en la base de datos.</td></tr>';
+            }
+        } catch (error) {
+            console.error("Error al cargar productos:", error);
+            this.mostrarError("Error al conectar con la API de productos.");
         }
-    } catch (error) {
-        console.error("Error al cargar productos:", error);
-        document.getElementById('contenedor-principal').innerHTML = `<div class="alert alert-danger">Error de conexión con el servidor.</div>`;
-    }
-}
-
-//Función para abrir el formulario (vacío para nuevo, o relleno para editar)
-function abrirModalProducto(datos = null) {
-    if (!instanceModalProducto) {
-        instanceModalProducto = new bootstrap.Modal(document.getElementById('modalProducto'));
     }
 
-    const form = document.getElementById('formProducto');
-    form.reset(); //Limpiamos los campos
-
-    //El campo oculto del ID lo ponemos vacío por defecto
-    document.getElementById('id_producto').value = "";
-
-    if (datos) {
-        // --- MODO EDICIÓN ---
-        document.getElementById('modalTitulo').innerText = "Editar Producto #" + datos.id_producto;
-        document.getElementById('id_producto').value = datos.id_producto;
-        document.getElementById('nombre').value = datos.nombre;
-        document.getElementById('descripcion').value = datos.descripcion;
-        document.getElementById('precio_unidad').value = datos.precio_unidad;
-        document.getElementById('cantidad').value = datos.cantidad;
-        document.getElementById('imagen').value = datos.imagen;
-    } else {
-        // --- MODO NUEVO ---
-        document.getElementById('modalTitulo').innerText = "Nuevo Producto";
-    }
-
-    instanceModalProducto.show();
-}
-
-//Busca la información de un mochi concreto para cargarla en el modal
-async function editarProducto(id) {
-    try {
-        const response = await fetch(`index.php?controller=api&action=productos&id=${id}`);
-        const res = await response.json();
-        if (res.estado === 'Exito') {
-            abrirModalProducto(res.data);
-        } else {
-            alert("No se pudo obtener la información del producto.");
+    /**
+     * Abre el modal para añadir o editar un producto
+     */
+    abrirModal(datos = null) {
+        if (!this.modal) {
+            this.modal = new bootstrap.Modal(document.getElementById('modalProducto'));
         }
-    } catch (error) {
-        console.error("Error al editar:", error);
-    }
-}
-
-//Recoge los datos del formulario y decide si debe CREAR o ACTUALIZAR
-async function guardarProducto() {
-    const id = document.getElementById('id_producto').value;
-
-    //Creamos el objeto con los datos, asegurando que los números sean números
-    const datos = {
-        nombre: document.getElementById('nombre').value,
-        descripcion: document.getElementById('descripcion').value,
-        precio_unidad: parseFloat(document.getElementById('precio_unidad').value),
-        cantidad: parseInt(document.getElementById('cantidad').value),
-        imagen: document.getElementById('imagen').value || 'default.png'
-    };
-
-    //Validación rápida antes de enviar al servidor
-    if (!datos.nombre || isNaN(datos.precio_unidad)) {
-        return alert("Por favor, rellena los campos obligatorios.");
-    }
-
-    //Si el ID existe, lo añadimos al objeto para que la API sepa cuál editar
-    if (id) datos.id_producto = id;
-
-    try {
-        const response = await fetch('index.php?controller=api&action=productos', {
-            //El truco: si hay ID usamos PUT (actualizar), si no, usamos POST (crear)
-            method: id ? 'PUT' : 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
-
-        const res = await response.json();
-
-        if (res.estado === 'Exito') {
-            instanceModalProducto.hide(); //Cerramos el pop-up
-            cargarSeccionProductos();     //Refrescamos la tabla
-        } else {
-            alert("Error del servidor: " + res.mensaje);
+        if (!this.form) {
+            this.form = document.getElementById('formProducto');
         }
-    } catch (error) {
-        alert("Error crítico de comunicación con la API");
-    }
-}
+        
+        this.form.reset();
+        document.getElementById('id_producto').value = "";
 
-//Función para borrar un producto tras confirmar con el administrador
-async function confirmarEliminar(id) {
-    if (!confirm("¿Estás seguro de que deseas eliminar este mochi? Esta acción no se puede deshacer.")) return;
-
-    try {
-        const response = await fetch('index.php?controller=api&action=productos', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id })
-        });
-
-        const res = await response.json();
-
-        if (res.estado === 'Exito') {
-            cargarSeccionProductos(); //Actualizamos la lista automáticamente
+        if (datos) {
+            // Desestructuración de datos cargados del API (JS Avanzado)
+            const { id_producto, nombre, descripcion, precio_unidad, cantidad, imagen } = datos;
+            document.getElementById('modalTitulo').innerText = "Editar Producto #" + id_producto;
+            document.getElementById('id_producto').value = id_producto;
+            document.getElementById('nombre').value = nombre;
+            document.getElementById('descripcion').value = descripcion || '';
+            document.getElementById('precio_unidad').value = precio_unidad;
+            document.getElementById('cantidad').value = cantidad;
+            document.getElementById('imagen').value = imagen || '';
         } else {
-            alert("No se pudo eliminar: " + res.mensaje);
+            document.getElementById('modalTitulo').innerText = "Nuevo Producto";
         }
-    } catch (error) {
-        alert("Error al intentar conectar con el servidor para eliminar.");
+
+        this.modal.show();
+    }
+
+    /**
+     * Solicita datos de un producto específico para su edición (Promises)
+     */
+    async editar(id) {
+        try {
+            const response = await fetch(`index.php?controller=api&action=productos&id=${id}`);
+            const res = await response.json();
+            if (res.estado === 'Exito') {
+                this.abrirModal(res.data);
+            } else {
+                alert("No se pudo obtener la información del producto.");
+            }
+        } catch (error) {
+            console.error("Error al editar:", error);
+        }
+    }
+
+    /**
+     * Guarda el producto (crear o actualizar) enviando datos en JSON (Spread Operator)
+     */
+    async guardar() {
+        const id = document.getElementById('id_producto').value;
+
+        const datos = {
+            nombre: document.getElementById('nombre').value.trim(),
+            descripcion: document.getElementById('descripcion').value.trim(),
+            precio_unidad: parseFloat(document.getElementById('precio_unidad').value),
+            cantidad: parseInt(document.getElementById('cantidad').value),
+            imagen: document.getElementById('imagen').value.trim() || 'default.png'
+        };
+
+        if (!datos.nombre || isNaN(datos.precio_unidad)) {
+            return alert("Por favor, rellena los campos obligatorios.");
+        }
+
+        // Operador Spread para concatenar propiedades del payload (JS Avanzado)
+        const payload = id ? { ...datos, id_producto: id } : { ...datos };
+
+        try {
+            const response = await fetch('index.php?controller=api&action=productos', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const res = await response.json();
+
+            if (res.estado === 'Exito') {
+                this.modal.hide();
+                this.cargar();
+            } else {
+                alert("Error del servidor: " + res.mensaje);
+            }
+        } catch (error) {
+            alert("Error crítico de comunicación con la API");
+        }
+    }
+
+    /**
+     * Elimina un producto por su ID
+     */
+    async confirmarEliminar(id) {
+        if (!confirm("¿Estás seguro de que deseas eliminar este mochi? Esta acción no se puede deshacer.")) return;
+
+        try {
+            const response = await fetch('index.php?controller=api&action=productos', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            });
+
+            const res = await response.json();
+
+            if (res.estado === 'Exito') {
+                this.cargar();
+            } else {
+                alert("No se pudo eliminar: " + res.mensaje);
+            }
+        } catch (error) {
+            alert("Error al intentar conectar con el servidor para eliminar.");
+        }
     }
 }

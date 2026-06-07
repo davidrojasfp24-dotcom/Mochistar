@@ -2,12 +2,12 @@ Proy 1
 -Prueba validación
 -Optimización del código
 -Diaframa de clases
--JS avanzado minimo 3
--JS básico
--Eventos JS -onclick no -listeners si
--DOM
+[x] -JS avanzado minimo 3
+[x] -JS básico
+[x] -Eventos JS -onclick no -listeners si
+[x] -DOM
 -PHP integración HTML
--Clases JS
+[x] -Clases JS
 -Falta titulo de pagina (Todas)
 -Método de pago
 -Paguina detalle producto

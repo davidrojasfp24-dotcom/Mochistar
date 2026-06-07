@@ -20,19 +20,19 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']->getRol() !== 'admin') 
             <small class="text-uppercase fw-bold">Administración</small>
         </div>
         <div class="list-group list-group-flush px-3">
-            <a href="#" onclick="cambiarSeccion('oferta', event)" class="nav-link-custom active">
+            <a href="#" data-section="oferta" class="nav-link-custom active">
                 <i class="bi bi-percent me-3"></i> Ofertas
             </a>
-            <a href="#" onclick="cambiarSeccion('pedido', event)" class="nav-link-custom">
+            <a href="#" data-section="pedido" class="nav-link-custom">
                 <i class="bi bi-cart me-3"></i> Pedidos
             </a>
-            <a href="#" onclick="cambiarSeccion('producto', event)" class="nav-link-custom">
+            <a href="#" data-section="producto" class="nav-link-custom">
                 <i class="bi bi-box-seam me-3"></i> Productos
             </a>
-            <a href="#" onclick="cambiarSeccion('usuario', event)" class="nav-link-custom">
+            <a href="#" data-section="usuario" class="nav-link-custom">
                 <i class="bi bi-people me-3"></i> Usuarios
             </a>
-            <a href="#" onclick="cambiarSeccion('log', event)" class="nav-link-custom">
+            <a href="#" data-section="log" class="nav-link-custom">
                 <i class="bi bi-clock-history me-3"></i> Historial (Logs)
             </a>
         </div>
@@ -89,7 +89,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']->getRol() !== 'admin') 
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary px-4" onclick="guardarProducto()">Guardar Cambios</button>
+                <button type="button" class="btn btn-primary px-4" id="btn-guardar-producto">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -132,7 +132,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']->getRol() !== 'admin') 
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarUsuario()">Guardar Usuario</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-usuario">Guardar Usuario</button>
             </div>
         </div>
     </div>
@@ -158,9 +158,10 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']->getRol() !== 'admin') 
     </div>
 </div>
 
+<!-- Cargar el script base de administración primero para que los gestores puedan extender BaseManager -->
+<script src="view/panel/admin.js"></script>
 <script src="view/panel/producto.js"></script>
 <script src="view/panel/usuario.js"></script>
 <script src="view/panel/log.js"></script> 
-<script src="view/panel/admin.js"></script>
 <script src="view/panel/pedido.js"></script>
 <script src="view/panel/oferta.js"></script>
