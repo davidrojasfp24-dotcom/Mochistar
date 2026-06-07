@@ -31,6 +31,31 @@ class pedidoDAO {
         return $listaPedidos;
     }
 
+    // Obtener los pedidos de un usuario concreto para mostrarlos en su perfil
+    public static function getPedidosByUsuario($id_usuario) {
+        $con = DataBase::connect();
+
+        $stmt = $con->prepare("
+            SELECT id_pedido, estado, fecha, precio, id_usuario
+            FROM pedido
+            WHERE id_usuario = ?
+            ORDER BY fecha DESC, id_pedido DESC
+        ");
+        $stmt->bind_param('i', $id_usuario);
+        $stmt->execute();
+        $results = $stmt->get_result();
+
+        $listaPedidos = [];
+        while ($pedido = $results->fetch_assoc()) {
+            $pedido['lineas'] = self::getLineasByPedido(intval($pedido['id_pedido']));
+            $listaPedidos[] = $pedido;
+        }
+
+        $stmt->close();
+        $con->close();
+        return $listaPedidos;
+    }
+
     // Obtener las líneas (productos) de un pedido concreto
     public static function getLineasByPedido($id_pedido) {
         $con = DataBase::connect();
@@ -158,4 +183,4 @@ class pedidoDAO {
             // Ignoramos errores de registro de log para evitar que la operación principal falle
         }
     }
-}
+}

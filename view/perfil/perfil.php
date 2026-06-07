@@ -11,11 +11,7 @@ $usuario = $_SESSION['usuario'];
 
 // Obtener pedidos del usuario
 include_once 'model/pedidoDAO.php';
-$todosPedidos = pedidoDAO::getPedidos();
-$misPedidos = array_filter($todosPedidos, function($p) use ($usuario) {
-    return $p['id_usuario'] == $usuario->getId();
-});
-$misPedidos = array_values($misPedidos); // reindexar
+$misPedidos = pedidoDAO::getPedidosByUsuario($usuario->getId());
 ?>
 
 <link rel="stylesheet" href="view/perfil/perfil.css">
@@ -209,6 +205,18 @@ $misPedidos = array_values($misPedidos); // reindexar
                                         <i class="bi bi-calendar3"></i>
                                         <?php echo date('d/m/Y · H:i', strtotime($pedido['fecha'])); ?>
                                     </span>
+                                    <?php if (!empty($pedido['lineas'])): ?>
+                                        <div class="pedido-productos">
+                                            <?php foreach ($pedido['lineas'] as $linea): ?>
+                                                <span class="pedido-producto-chip">
+                                                    <?php echo htmlspecialchars($linea['nombre_producto'] ?: 'Producto eliminado'); ?>
+                                                    <strong>x<?php echo intval($linea['cantidad']); ?></strong>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="pedido-productos-vacio">Sin productos registrados</span>
+                                    <?php endif; ?>
                                 </div>
 
                                 <!-- Precio -->
@@ -225,6 +233,7 @@ $misPedidos = array_values($misPedidos); // reindexar
                                         $estadoClass = match(strtolower($estado)) {
                                             'pendiente'  => 'estado-pendiente',
                                             'enviado'    => 'estado-enviado',
+                                            'completado' => 'estado-entregado',
                                             'entregado'  => 'estado-entregado',
                                             'cancelado'  => 'estado-cancelado',
                                             default      => 'estado-pendiente'
@@ -232,6 +241,7 @@ $misPedidos = array_values($misPedidos); // reindexar
                                         $estadoIcon = match(strtolower($estado)) {
                                             'pendiente'  => 'clock-fill',
                                             'enviado'    => 'truck',
+                                            'completado' => 'check-circle-fill',
                                             'entregado'  => 'check-circle-fill',
                                             'cancelado'  => 'x-circle-fill',
                                             default      => 'clock-fill'
