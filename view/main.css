@@ -18,3 +18,23 @@ html, body {
 #page-content {
     min-height: calc(100vh - 70px);
 }
+
+/* Título de página visible en vistas principales */
+.page-title {
+    color: #fff;
+    margin: 20px 0 8px 40px; /* Alineado con el padding del nav */
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+@media (max-width: 576px) {
+    .page-title {
+        margin-left: 20px;
+        font-size: 1.4rem;
+    }
+}
+
+/* Aplicar border-radius uniforme a botones */
+button, .btn, [class^="btn-"], [class*=" btn-"] {
+    border-radius: 10px !important;
+}

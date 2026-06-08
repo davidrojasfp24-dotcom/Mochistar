@@ -1,7 +1,10 @@
 <link rel="stylesheet" href="view/carta/carta.css?v=<?php echo time(); ?>">
 
+<h1 class="page-title">Nuestra Carta</h1>
+
 <div class="container-fluid bg-black px-0">
     <div class="container py-5">
+        <h1 class="page-title">Nuestra Carta</h1>
         <div class="row g-4">
             <?php foreach ($productos as $producto): ?>
                 <div class="col-12 col-md-6 col-lg-3">

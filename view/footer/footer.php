@@ -6,7 +6,6 @@
 
         <!-- Columna 1: Marca -->
         <div class="footer-col footer-brand">
-            <img src="view/nav/img/logo.png" alt="Mochistar Logo" class="footer-logo">
             <p class="footer-tagline">El sabor japonés<br>más auténtico de España.</p>
             <div class="footer-social">
                 <a href="#" class="footer-social-link" title="Instagram" id="footer-instagram">

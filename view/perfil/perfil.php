@@ -90,6 +90,10 @@ $misPedidos = pedidoDAO::getPedidosByUsuario($usuario->getId());
     <!-- ═══════════════════════════════════════════
          CUERPO: 2 COLUMNAS
     ═══════════════════════════════════════════ -->
+    <div class="container py-4">
+        <h1 class="page-title">Mi Perfil</h1>
+    </div>
+
     <div class="perfil-body">
 
         <!-- ── COLUMNA IZQUIERDA: Datos personales ── -->

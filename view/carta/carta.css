@@ -133,3 +133,16 @@ html, body {
     background-color: #007acc;
     transform: scale(1.02);
 }
+
+/* Asegurar título de la página visible */
+.page-title {
+    color: #ffffff !important;
+    display: block;
+    margin: 20px 0 12px 40px;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+@media (max-width: 576px) {
+    .page-title { margin-left: 20px; font-size: 1.4rem; }
+}

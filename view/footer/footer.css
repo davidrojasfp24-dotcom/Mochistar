@@ -72,11 +72,22 @@
 }
 
 /* ---- COL 1: MARCA ---- */
-.footer-logo {
-    height: 38px;
+.footer-col.footer-brand .footer-logo {
+    height: 35px; /* Igual que .nav-logo img */
+    max-height: 35px; /* Evita que crezca si otras reglas fuerzan altura */
     width: auto;
-    margin-bottom: 4px;
+    display: block; /* Evita espacios extra en línea */
+    margin-bottom: 12px;
     filter: brightness(1.1);
+    object-fit: contain; /* Mantiene proporción si el contenedor cambia */
+}
+
+/* Ajuste responsive: logo un poco más pequeño en pantallas muy pequeñas */
+@media (max-width: 576px) {
+    .footer-col.footer-brand .footer-logo {
+        height: 28px;
+        max-height: 28px;
+    }
 }
 
 .footer-tagline {

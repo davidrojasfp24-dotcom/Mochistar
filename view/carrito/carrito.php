@@ -1,6 +1,8 @@
 <link rel="stylesheet" href="view/carrito/carrito.css">
+
 <div class="cart-main-container">
     <div class="container py-5">
+        <h1 class="page-title">Mi Carrito</h1>
         <div class="row g-5">
             <div class="col-lg-7">
                 <div id="lista-productos">
