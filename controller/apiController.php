@@ -5,6 +5,7 @@ class apiController
     public function ver_admin()
     {
         //Ponemos lo que queremos ver en la vista
+        $pageTitle = 'Panel de Administración - Mochistar';
         $view = 'view/panel/admin.php';
         //La variable ya existe y la vista la puede usar
         include_once 'view/main.php';

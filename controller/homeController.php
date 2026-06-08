@@ -8,6 +8,7 @@ class homeController {
         $productos = ProductoDAO::getProductos(); 
 
         //Definimos qué vista cargar
+        $pageTitle = 'Inicio - Mochistar';
         $view = 'view/home/home.php';
 
         //La variable $productos ya existe y la vista la puede usar

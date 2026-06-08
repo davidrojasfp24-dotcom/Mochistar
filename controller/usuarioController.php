@@ -94,6 +94,7 @@ class usuarioController {
             unset($_SESSION['error_login']);
         }
         
+        $pageTitle = 'Iniciar Sesión - Mochistar';
         $view = 'view/login/login.php';
         //Usamos el main.php para que se vea el menú y el pie de página
         include_once 'view/main.php';
@@ -101,6 +102,7 @@ class usuarioController {
 
     //Carga la pantalla para que los nuevos clientes se apunten
     public function ver_registro() {
+        $pageTitle = 'Crear Cuenta - Mochistar';
         $view = 'view/login/registro.php';
         include_once 'view/main.php';
     }
@@ -113,6 +115,7 @@ class usuarioController {
             header('Location: index.php?controller=usuario&action=ver_login');
             exit();
         }
+        $pageTitle = 'Mi Perfil - Mochistar';
         $view = 'view/perfil/perfil.php';
         include_once 'view/main.php';
     }

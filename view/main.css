@@ -1,9 +1,20 @@
-.separar{
+.separar {
     padding-top: 100px;
 }
 
 html, body {
     background-color: black !important;
-    color: white; /* Para que los textos generales se vean */
+    color: white;
     min-height: 100vh;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* Fuente Outfit en todos los elementos */
+*, *::before, *::after {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* Contenedor principal — espacio mínimo para el nav fijo de 70px */
+#page-content {
+    min-height: calc(100vh - 70px);
 }

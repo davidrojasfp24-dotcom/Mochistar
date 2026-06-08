@@ -8,6 +8,7 @@ class carritoController {
         $productos = ProductoDAO::getProductos(); 
 
         //Ponemos lo que queremos ver en la vista
+        $pageTitle = 'Mi Carrito - Mochistar';
         $view = 'view/carrito/carrito.php';
 
         //La variable ya existe y la vista la puede usar
